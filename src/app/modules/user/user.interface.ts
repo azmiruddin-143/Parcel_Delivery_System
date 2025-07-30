@@ -11,6 +11,11 @@ export enum IUserStatus {
     Blocked = "Blocked"
 }
 
+export interface IAuthProvider {
+    provider: "Google" | "Credential",
+    providerId : string
+}
+
 export interface IUser {
     _id?: Types.ObjectId; 
     name: string;
@@ -24,24 +29,24 @@ export interface IUser {
     updatedAt?: Date;
 
 }
-export interface IRegisteredUserResponse {
-    _id: Types.ObjectId;
-    name: string;
-    email: string;
-    role: IUserRole;
-    status: IUserStatus;
-    phone?: string;
-    address?: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+// export interface IRegisteredUserResponse {
+//     _id: Types.ObjectId;
+//     name: string;
+//     email: string;
+//     role: IUserRole;
+//     status: IUserStatus;
+//     phone?: string;
+//     address?: string;
+//     createdAt: Date;
+//     updatedAt: Date;
+// }
 
 
-export interface IUpdateUserPayload {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    status?: IUserStatus;
-    role?: IUserRole;
-}
+// export interface IUpdateUserPayload {
+//     name?: string;
+//     email?: string;
+//     phone?: string;
+//     address?: string;
+//     status?: IUserStatus;
+//     role?: IUserRole;
+// }

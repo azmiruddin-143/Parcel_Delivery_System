@@ -5,6 +5,7 @@
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./dist",
+    // "typeRoots": ["./types", "./node_modules/@types"],
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
