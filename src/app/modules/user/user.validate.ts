@@ -1,50 +1,51 @@
-// // src/modules/user/user.validation.ts
-// import { z } from 'zod';
-// import { IUserRole, IUserStatus } from './user.interface';
+import z from "zod";
+import { IUserRole } from "./user.interface";
+
+export const createZodSchema = z.object({
+    name: z.string()
+        .min(3, { message: "Name must be at least 3 characters long" })
+        .max(50, { message: "Name cannot exceed 50 characters" }),
+
+    email: z.string()
+        .email({ message: "Invalid email address" }),
+
+    password: z.string()
+        .min(6, { message: "Password must be at least 6 characters long" })
+        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+        .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+        .regex(/[0-9]/, { message: "Password must contain at least one digit" })
+        .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
+        .optional(),
+    phone: z.string()
+        .regex(/^(01|\+?8801)[0-9]{9}$/, {
+            message: "Invalid Bangladeshi phone number. Must be 11 digits and start with 01 or +8801."
+        })
+        .optional(),
+
+    address: z.string()
+        .max(200, { message: "Address cannot exceed 200 characters" })
+        .optional(),
+})
 
 
-// export const createUserZodSchema = z.object({
-//   body: z.object({
-//     name: z.string({
-//       required_error: 'Name is required',
-//     }).trim().min(1, 'Name cannot be empty'),
-//     email: z.string({
-//       required_error: 'Email is required',
-//     }).email('Invalid email address').trim(),
-//     password: z.string({
-//       required_error: 'Password is required',
-//     }).min(6, 'Password must be at least 6 characters long'),
-//     role: z.enum(['sender', 'receiver', 'admin'], {
-//       required_error: 'Role is required',
-//       invalid_type_error: "Role must be 'sender', 'receiver', or 'admin'",
-//     }).default('sender'), // Default role for registration
-//     phone: z.string().trim().optional(),
-//     address: z.string().trim().optional(),
-//   }),
-// });
+
+export const updateZodSchema = z.object({
+    name: z.string()
+        .min(3, { message: "Name must be at least 3 characters long" })
+        .max(50, { message: "Name cannot exceed 50 characters" }),
+
+    password: z.string()
+        .min(6, { message: "Password must be at least 6 characters long" })
+        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+        .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+        .regex(/[0-9]/, { message: "Password must contain at least one digit" })
+        .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
+        .optional(),
+
+    address: z.string()
+        .max(200, { message: "Address cannot exceed 200 characters" })
+        .optional(),
+    role: z.enum(Object.values(IUserRole)as [string]).optional(),
 
 
-// export const updateUserZodSchema = z.object({
-//   body: z.object({
-//     name: z.string().trim().min(1, 'Name cannot be empty').optional(),
-//     email: z.string().email('Invalid email address').trim().optional(),
-//     phone: z.string().trim().optional(),
-//     address: z.string().trim().optional(),
-//     status: z.enum( Object.values(IUserStatus), {
-//       invalid_type_error: "Status must be 'active' or 'blocked'",
-//     }).optional(),
-//     role: z.enum( Object.values(IUserRole), {
-//       invalid_type_error: "Role must be 'sender', 'receiver', or 'admin'",
-//     }).optional(),
-//   }),
-// });
-
-
-// export const changeUserStatusZodSchema = z.object({
-//   body: z.object({
-//     status: z.enum( Object.values(IUserStatus), {
-//       required_error: 'Status is required',
-//       invalid_type_error: "Status must be 'active' or 'blocked'",
-//     }),
-//   }),
-// });
+})

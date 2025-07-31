@@ -83,8 +83,8 @@ const loginUserService = async (payload: Partial<IUser>) => {
 
 const passwordResetService = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload ) => {
 
-
-  const user = await User.findOne({_id:decodedToken.userId})
+ 
+  const user = await User.findOne({_id:decodedToken.userId}).select("+password");
 
   if (!user) {
     throw new Error("User not found");
