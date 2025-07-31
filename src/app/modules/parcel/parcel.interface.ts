@@ -12,9 +12,7 @@ export enum IParcelStatus {
     Held="Held",
     Delivered="Delivered",
     Returned="Returned",
-    Cancelled="Cancelled"
-    
-    
+    Cancelled="Cancelled",
 }
 
  
