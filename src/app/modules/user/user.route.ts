@@ -7,7 +7,7 @@ const router = Router()
 
 router.post("/register", UserControllers.createUser)
 router.get("/all-users", checkAuth(IUserRole.Admin), UserControllers.getAllUsers)
-router.patch("/:id",  UserControllers.updateUser)
+router.patch("/:id", UserControllers.updateUser)
 router.get("/:id", UserControllers.getSingleUser)
 router.delete("/:id", UserControllers.deleteUser);
 // /api/v1/user/:id
