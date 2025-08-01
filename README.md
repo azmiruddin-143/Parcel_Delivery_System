@@ -70,30 +70,30 @@ POST /auth/reset-password: Reset the password of the logged-in user.
 POST /auth/logout: Log out a user.
 
 # 📦 Parcel Routes
-POST /parcel: Create a new parcel. Access: Sender
+POST /parcels: Create a new parcel. Access: Sender
 
-GET /parcel/all-parcels: View the list of all parcels. Access: Admin
+GET /parcels: View the list of all parcels. Access: Admin
 
-GET /parcel/my: View all parcels sent by you. Access: Sender
+GET /parcels/my: View all parcels sent by you. Access: Sender
 
-GET /parcel/incoming: View all parcels addressed to you. Access: Receiver
+GET /parcels/incoming: View all parcels addressed to you. Access: Receiver
 
-PATCH /parcel/:id/cancel: Cancel a parcel (before delivery starts). Access: Sender
+PATCH /parcels/:id/cancel: Cancel a parcel (before delivery starts). Access: Sender
 
-PATCH /parcel/:id/status: Update a parcel's status. Access: Admin
+PATCH /parcels/:id/status: Update a parcel's status. Access: Admin
 
  # 🧑 User Routes
-POST /user/register: Register a new user (Sender/Receiver). Access: Public
+POST /users/register: Register a new user (Sender/Receiver). Access: Public
 
-GET /user/all-users: View the list of all users. Access: Admin
+GET /users/all-users: View the list of all users. Access: Admin
 
-GET /user/:id: Get a single user's details. Access: Any Authenticated
+GET /users/:id: Get a single user's details. Access: Any Authenticated
 
-PATCH /user/:id: Update a user's details. Access: Any Authenticated
+PATCH /users/:id: Update a user's details. Access: Any Authenticated
 
-PATCH /user/:id/status: Change a user's status (Active/Blocked). Access: Admin
+PATCH /users/:id/status: Change a user's status (Active/Blocked). Access: Admin
 
-DELETE /user/:id: Delete a user. Access: Admin
+DELETE /users/:id: Delete a user. Access: Admin
 
 # Testing and Demo
 All API endpoints for this project have been tested using Postman. A screen-recorded video will be provided to demonstrate all features, showcasing the complete functionality of the project.
