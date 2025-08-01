@@ -24,11 +24,11 @@ export const createParcelZodSchema = z.object({
 
 
 export const updateParcelStatusZodSchema = z.object({
-    body: z.object({
+
         status: z.enum([...Object.values(IParcelStatus)] as [string, ...string[]]),
         location: z.string().min(1, 'Location cannot be empty').optional(),
         note: z.string().min(1, 'Note cannot be empty').optional(),
-    }),
+    
 });
 
 export const cancelParcelZodSchema = z.object({});

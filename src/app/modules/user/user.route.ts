@@ -11,6 +11,8 @@ router.post("/register",validateRequest(createZodSchema), UserControllers.create
 router.get("/all-users", checkAuth(IUserRole.Admin), UserControllers.getAllUsers)
 router.patch("/:id",validateRequest(createZodSchema),checkAuth(...Object.values(IUserRole)), UserControllers.updateUser)
 router.get("/:id", UserControllers.getSingleUser)
-router.delete("/:id", UserControllers.deleteUser);
+router.patch('/:id/status',checkAuth(IUserRole.Admin),UserControllers.changeUserStatus
+);
+router.delete("/:id",checkAuth(IUserRole.Admin), UserControllers.deleteUser);
 export const UserRoutes = router
 

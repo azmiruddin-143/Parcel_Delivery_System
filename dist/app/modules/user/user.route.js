@@ -12,5 +12,6 @@ router.post("/register", (0, validateRequest_1.validateRequest)(user_validate_1.
 router.get("/all-users", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), user_controller_1.UserControllers.getAllUsers);
 router.patch("/:id", (0, validateRequest_1.validateRequest)(user_validate_1.createZodSchema), (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.IUserRole)), user_controller_1.UserControllers.updateUser);
 router.get("/:id", user_controller_1.UserControllers.getSingleUser);
+router.patch('/:id/status', (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), user_controller_1.UserControllers.changeUserStatus);
 router.delete("/:id", user_controller_1.UserControllers.deleteUser);
 exports.UserRoutes = router;

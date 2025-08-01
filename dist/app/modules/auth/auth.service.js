@@ -46,17 +46,18 @@ const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function
         user: rest
     };
 });
-const passwordResetService = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findOne({ _id: decodedToken.userId }).select("+password");
+const passwordResetService = (userId, oldPassword, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ _id: userId }).select("+password");
     if (!user) {
         throw new Error("User not found");
     }
-    const OldpasswordMatch = yield bcrypt_1.default.compare(oldPassword, user === null || user === void 0 ? void 0 : user.password);
+    const OldpasswordMatch = yield bcrypt_1.default.compare(oldPassword, user.password);
     if (!OldpasswordMatch) {
         throw new Error("Password dose not exit");
     }
     user.password = yield bcrypt_1.default.hash(newPassword, Number(env_1.envVars.BCRYPT_SALT_ROUND));
-    yield (user === null || user === void 0 ? void 0 : user.save());
+    yield user.save();
+    return null;
 });
 exports.AuthService = {
     loginUserService, passwordResetService

@@ -20,10 +20,8 @@ exports.createParcelZodSchema = zod_1.z.object({
     deliveryAddress: zod_1.z.string().min(1, 'Delivery address is required').max(200, 'Delivery address cannot exceed 200 characters'),
 });
 exports.updateParcelStatusZodSchema = zod_1.z.object({
-    body: zod_1.z.object({
-        status: zod_1.z.enum([...Object.values(parcel_interface_1.IParcelStatus)]),
-        location: zod_1.z.string().min(1, 'Location cannot be empty').optional(),
-        note: zod_1.z.string().min(1, 'Note cannot be empty').optional(),
-    }),
+    status: zod_1.z.enum([...Object.values(parcel_interface_1.IParcelStatus)]),
+    location: zod_1.z.string().min(1, 'Location cannot be empty').optional(),
+    note: zod_1.z.string().min(1, 'Note cannot be empty').optional(),
 });
 exports.cancelParcelZodSchema = zod_1.z.object({});

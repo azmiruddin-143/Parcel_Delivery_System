@@ -4,7 +4,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
 import { User } from "./user.model";
-import { IAuthProvider, IUser, IUserRole } from "./user.interface";
+import { IAuthProvider, IUser, IUserRole, IUserStatus } from "./user.interface";
 
 const createUser = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload;
@@ -79,6 +79,26 @@ const getAllUsers = async () => {
 const getSingleUser = async (id: string) => {
     return await User.findById(id);
 };
+
+
+const changeUserStatus = async (
+  userId: string,
+  newStatus: IUserStatus,
+): Promise<IUser> => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  user.status = newStatus;
+  await user.save();
+  return user;
+};
+
+
+
+
+
 const deleteUser = async (id: string) => {
     return await User.findByIdAndDelete(id);
 };
@@ -89,5 +109,6 @@ export const UserServices = {
     getAllUsers,
     updateUser,
     getSingleUser,
+    changeUserStatus ,
     deleteUser
 }

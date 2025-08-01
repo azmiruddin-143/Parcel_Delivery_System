@@ -30,16 +30,10 @@ const createUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
-    // const token = req.headers.authorization
-    // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_SECRET) as JwtPayload
     const verifiedToken = req.user;
     ;
     const payload = req.body;
     const user = yield user_service_1.UserServices.updateUser(userId, payload, verifiedToken);
-    // res.status(httpStatus.CREATED).json({
-    //     message: "User Created Successfully",
-    //     user
-    // })
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.CREATED,
@@ -68,6 +62,17 @@ const getSingleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const changeUserStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { status } = req.body;
+    const updatedUser = yield user_service_1.UserServices.changeUserStatus(id, status);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'User status updated successfully',
+        data: updatedUser,
+    });
+}));
 const deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield user_service_1.UserServices.deleteUser(id);
@@ -83,5 +88,6 @@ exports.UserControllers = {
     getAllUsers,
     updateUser,
     getSingleUser,
+    changeUserStatus,
     deleteUser
 };

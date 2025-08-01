@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../../utils/sendResponse"
 import { AuthService } from "./auth.service"
+import httpStatus from "http-status-codes";
 const credentialsLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const loginUser = await AuthService.loginUserService(req.body)
@@ -26,49 +27,52 @@ const credentialsLogin = async (req: Request, res: Response, next: NextFunction)
 }
 
 const userLogout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: false, 
+            sameSite: "lax"
+        });
 
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax"
-    })
-    
+        sendResponse(res, {
+            success: true,
+            statusCode: httpStatus.OK, 
+            message: "User Logged out Successfully",
+            data: null
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
-
-    sendResponse(res, {
-        success: true,
-        statusCode: 201,
-        message: "User Logout SuccesFull",
-        data: null
-
-    })
-
-}
 
 
 const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const { oldPassword, newPassword } = req.body;
+        
+        const userId = req.user?._id; 
 
-        const { oldPassword, newPassword } = req.body
-        const decodedToken = req.user
-
-        if (!decodedToken) {
-            throw new Error("Unauthorized: User not authenticated")
+        if (!userId) {
+            throw new Error("Unauthorized: User not authenticated");
         }
 
-        const userresetPassword = await AuthService.passwordResetService(oldPassword, newPassword, decodedToken)
+        const userresetPassword = await AuthService.passwordResetService(
+            userId, 
+            oldPassword,
+            newPassword
+        );
+
         sendResponse(res, {
             success: true,
             statusCode: 201,
             message: "Reset Password SuccesFull",
             data: userresetPassword
-        })
-
+        });
+    } catch (error) {
+        next(error);
     }
-    catch (error) {
-        next(error)
-    }
-}
+};
 
 
 

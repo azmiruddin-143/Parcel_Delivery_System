@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const sendResponse_1 = require("../../utils/sendResponse");
 const auth_service_1 = require("./auth.service");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const credentialsLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const loginUser = yield auth_service_1.AuthService.loginUserService(req.body);
@@ -31,26 +35,32 @@ const credentialsLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     }
 });
 const userLogout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax"
-    });
-    (0, sendResponse_1.sendResponse)(res, {
-        success: true,
-        statusCode: 201,
-        message: "User Logout SuccesFull",
-        data: null
-    });
+    try {
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        });
+        (0, sendResponse_1.sendResponse)(res, {
+            success: true,
+            statusCode: http_status_codes_1.default.OK,
+            message: "User Logged out Successfully",
+            data: null
+        });
+    }
+    catch (error) {
+        next(error);
+    }
 });
 const resetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { oldPassword, newPassword } = req.body;
-        const decodedToken = req.user;
-        if (!decodedToken) {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        if (!userId) {
             throw new Error("Unauthorized: User not authenticated");
         }
-        const userresetPassword = yield auth_service_1.AuthService.passwordResetService(oldPassword, newPassword, decodedToken);
+        const userresetPassword = yield auth_service_1.AuthService.passwordResetService(userId, oldPassword, newPassword);
         (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: 201,

@@ -11,7 +11,7 @@ const createParcel = catchAsync(async (req: Request, res: Response, next: NextFu
         throw new Error('Unauthorized: User not found in request');
     }
     
-    const senderId = req.user.userId; // Assuming user ID is stored in req.user
+    const senderId = req.user._id; 
     
     const parcel = await ParcelServices.createParcel(req.body, senderId)
 
@@ -29,7 +29,7 @@ const updateParcelStatus = catchAsync(async (req: Request, res: Response) => {
      if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const adminId = req.user.userId;
+    const adminId = req.user._id;
     const { status, location, note } = req.body;
 
     const result = await ParcelServices.updateParcelStatus(id, { status, location, note }, adminId);
@@ -48,7 +48,8 @@ const cancelParcel = catchAsync(async (req: Request, res: Response) => {
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const senderId = req.user.userId;
+    const senderId = req.user._id;
+  
 
     const result = await ParcelServices.cancelParcel(id, senderId);
 
@@ -95,7 +96,10 @@ const getMyParcels = catchAsync(async (req: Request, res: Response) => {
      if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const senderId = req.user.userId;
+    const senderId = req.user._id;
+
+
+
     const result = await ParcelServices.getMyParcels(senderId);
 
     sendResponse(res, {
@@ -113,7 +117,7 @@ const getIncomingParcels = catchAsync(async (req: Request, res: Response) => {
      if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const receiverId = req.user.userId;
+    const receiverId = req.user._id;
     const result = await ParcelServices.getIncomingParcels(receiverId);
 
     sendResponse(res, {

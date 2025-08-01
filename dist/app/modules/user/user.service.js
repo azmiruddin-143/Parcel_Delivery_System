@@ -73,6 +73,15 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
 const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield user_model_1.User.findById(id);
 });
+const changeUserStatus = (userId, newStatus) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, 'User not found');
+    }
+    user.status = newStatus;
+    yield user.save();
+    return user;
+});
 const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield user_model_1.User.findByIdAndDelete(id);
 });
@@ -81,5 +90,6 @@ exports.UserServices = {
     getAllUsers,
     updateUser,
     getSingleUser,
+    changeUserStatus,
     deleteUser
 };

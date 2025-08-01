@@ -22,7 +22,7 @@ const createParcel = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const senderId = req.user.userId; // Assuming user ID is stored in req.user
+    const senderId = req.user._id;
     const parcel = yield parcel_service_1.ParcelServices.createParcel(req.body, senderId);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
@@ -36,7 +36,7 @@ const updateParcelStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const adminId = req.user.userId;
+    const adminId = req.user._id;
     const { status, location, note } = req.body;
     const result = yield parcel_service_1.ParcelServices.updateParcelStatus(id, { status, location, note }, adminId);
     (0, sendResponse_1.sendResponse)(res, {
@@ -51,7 +51,7 @@ const cancelParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const senderId = req.user.userId;
+    const senderId = req.user._id;
     const result = yield parcel_service_1.ParcelServices.cancelParcel(id, senderId);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -88,7 +88,7 @@ const getMyParcels = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const senderId = req.user.userId;
+    const senderId = req.user._id;
     const result = yield parcel_service_1.ParcelServices.getMyParcels(senderId);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
@@ -104,7 +104,7 @@ const getIncomingParcels = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
     if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    const receiverId = req.user.userId;
+    const receiverId = req.user._id;
     const result = yield parcel_service_1.ParcelServices.getIncomingParcels(receiverId);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,

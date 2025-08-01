@@ -38,27 +38,25 @@ const loginUserService = async (payload: Partial<IUser>) => {
 
 
 
-const passwordResetService = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload ) => {
+const passwordResetService = async (userId: string, oldPassword: string, newPassword: string) => {
 
- 
-  const user = await User.findOne({_id:decodedToken.userId}).select("+password");
+    const user = await User.findOne({ _id: userId }).select("+password");
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-  const OldpasswordMatch = await bcryptjs.compare(oldPassword, user?.password as string)
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const OldpasswordMatch = await bcryptjs.compare(oldPassword, user.password as string);
 
-  if (!OldpasswordMatch) {
-    throw new Error("Password dose not exit")
-  }
+    if (!OldpasswordMatch) {
+        throw new Error("Password dose not exit");
+    }
 
-  user.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND))
+    user.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND));
 
-  await user?.save()
-
-}
-
-
+    await user.save();
+    
+    return null;
+};
 
 
 

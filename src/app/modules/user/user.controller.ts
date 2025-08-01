@@ -21,18 +21,14 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
-    // const token = req.headers.authorization
-    // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_SECRET) as JwtPayload
+
 
     const verifiedToken = req.user as JwtPayload;;
 
     const payload = req.body;
     const user = await UserServices.updateUser(userId, payload, verifiedToken)
 
-    // res.status(httpStatus.CREATED).json({
-    //     message: "User Created Successfully",
-    //     user
-    // })
+  
 
     sendResponse(res, {
         success: true,
@@ -67,6 +63,22 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+
+
+const changeUserStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params; 
+  const { status } = req.body; 
+
+  const updatedUser = await UserServices.changeUserStatus(id, status);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User status updated successfully',
+    data: updatedUser,
+  });
+});
+
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await UserServices.deleteUser(id);
@@ -81,11 +93,14 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
 
 
 
+
+
 export const UserControllers = {
     createUser,
     getAllUsers,
     updateUser,
     getSingleUser,
+    changeUserStatus,
     deleteUser
 }
 
