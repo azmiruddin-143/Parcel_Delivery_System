@@ -14,12 +14,10 @@ import { envVars } from "../config/env";
         const accesToken = jwt.sign(jsonPaylod, envVars.JWT_ACCESS_SECRET, { expiresIn: envVars.JWT_REFRESH_EXPIRES } as SignOptions
         );
       
-        // const refreshToken = jwt.sign(jsonPaylod, envVars.JWT_REFRESH_SECRET, { expiresIn: envVars.JWT_REFRESH_EXPIRES } as SignOptions
-        // );
-      
+       
      return{
         accesToken,
-        // refreshToken
+     
      }
 
    }

@@ -1,4 +1,4 @@
-Parcel Delivery System API
+# Parcel Delivery System API
 🌟 Project Overview
 This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It is designed for a parcel delivery system where users can perform various tasks as Senders, Receivers, and Admins.
 
@@ -19,7 +19,7 @@ Security: JWT (JSON Web Tokens), bcrypt
 
 Validation: Zod
 
-📦 Local Setup
+# 📦 Local Setup
 Follow these steps to set up the project on your local machine:
 
 Clone the Repository:
@@ -27,11 +27,9 @@ Clone the Repository:
 git clone <your-repo-link>
 cd parcel-delivery-system
 
-
 Install Dependencies:
 
 npm install
-
 
 Create an Environment File:
 Create a .env file in the project root and set the necessary variables.
@@ -42,34 +40,27 @@ JWT_SECRET=YOUR_VERY_SECRET_KEY
 JWT_EXPIRES_IN=7d
 BCRYPT_SALT_ROUNDS=12
 
-
 Start the Server:
 
 npm run dev
 
-
 Your server will run on http://localhost:5000.
 
-🔑 ADMIN ACCESS
+# 🔑 ADMIN ACCESS
 For testing and administrative purposes, you can log in with the following admin credentials:
 
 Key
 
 Value
 
-Email
+Email: azmiruddin05@gmail.com 
+Password: Azmir1@
 
-azmiruddin05@gmail.com
-
-Password
-
-Azmir1@
-
-🚀 API Documentation
+# 🚀 API Documentation
 The base URL for our backend API is:
 https://parcel-delivery-system-nine.vercel.app/api/v1
 
-🔐 Authentication Routes
+# 🔐 Authentication Routes
 POST /auth/register: Register a new user (Sender/Receiver).
 
 POST /auth/login: Log in a user.
@@ -78,7 +69,7 @@ POST /auth/reset-password: Reset the password of the logged-in user.
 
 POST /auth/logout: Log out a user.
 
-📦 Parcel Routes
+# 📦 Parcel Routes
 POST /parcels: Create a new parcel. Access: Sender
 
 GET /parcels: View the list of all parcels. Access: Admin
@@ -91,7 +82,7 @@ PATCH /parcels/:id/cancel: Cancel a parcel (before delivery starts). Access: Sen
 
 PATCH /parcels/:id/status: Update a parcel's status. Access: Admin
 
-🧑 User Routes
+ # 🧑 User Routes
 POST /users/register: Register a new user (Sender/Receiver). Access: Public
 
 GET /users/all-users: View the list of all users. Access: Admin
@@ -104,5 +95,5 @@ PATCH /users/:id/status: Change a user's status (Active/Blocked). Access: Admin
 
 DELETE /users/:id: Delete a user. Access: Admin
 
-✅ Testing and Demo
+# Testing and Demo
 All API endpoints for this project have been tested using Postman. A screen-recorded video will be provided to demonstrate all features, showcasing the complete functionality of the project.
