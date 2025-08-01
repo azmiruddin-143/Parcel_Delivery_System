@@ -13,11 +13,8 @@ const crateToken = (user) => {
         userRole: user.role
     };
     const accesToken = jsonwebtoken_1.default.sign(jsonPaylod, env_1.envVars.JWT_ACCESS_SECRET, { expiresIn: env_1.envVars.JWT_REFRESH_EXPIRES });
-    // const refreshToken = jwt.sign(jsonPaylod, envVars.JWT_REFRESH_SECRET, { expiresIn: envVars.JWT_REFRESH_EXPIRES } as SignOptions
-    // );
     return {
         accesToken,
-        // refreshToken
     };
 };
 exports.crateToken = crateToken;

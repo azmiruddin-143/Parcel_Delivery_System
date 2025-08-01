@@ -11,7 +11,10 @@ export enum IUserStatus {
     Blocked = "Blocked"
 }
 
-
+export interface IAuthProvider {
+    provider: "Google" | "Credential",
+    providerId : string
+}
 
 export interface IUser {
     _id?: Types.ObjectId; 
