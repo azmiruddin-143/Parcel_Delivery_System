@@ -1,9 +1,4 @@
 "use strict";
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { NextFunction, Request, Response } from "express"
-// import { envVars } from "../config/env"
-// import AppError from "../errorHelpers/AppError"
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -14,17 +9,19 @@ const handlerZodError_1 = require("../helpers/handlerZodError");
 const handlerValidationError_1 = require("../helpers/handlerValidationError");
 const handlerDuplicateError_1 = require("../helpers/handlerDuplicateError");
 const AppError_1 = __importDefault(require("../errorHelpers/AppError"));
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+err, req, res, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+next) => {
     let errorSources = [];
     let statusCode = 500;
     let message = "Something Went Wrong!!";
-    //Duplicate error
     if (err.code === 11000) {
         const simplifiedError = (0, handlerDuplicateError_1.handlerDuplicateError)(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
     }
-    // Object ID error / Cast Error
     else if (err.name === "CastError") {
         const simplifiedError = (0, handleCastError_1.handleCastError)(err);
         statusCode = simplifiedError.statusCode;
@@ -36,7 +33,6 @@ const globalErrorHandler = (err, req, res, next) => {
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSources;
     }
-    //Mongoose Validation Error
     else if (err.name === "ValidationError") {
         const simplifiedError = (0, handlerValidationError_1.handlerValidationError)(err);
         statusCode = simplifiedError.statusCode;

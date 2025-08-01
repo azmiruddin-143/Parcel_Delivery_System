@@ -31,9 +31,7 @@ const userToken_1 = require("../../utils/userToken");
 const env_1 = require("../../config/env");
 const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
-    //   console.log("email Or Password from payload:", email,password);
     const isUserAxist = yield user_model_1.User.findOne({ email }).select("+password");
-    //   console.log("Password from DB:", isUserAxist.password as string);
     if (!isUserAxist) {
         throw new Error("Email dose not exit");
     }
@@ -48,35 +46,6 @@ const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function
         user: rest
     };
 });
-// const getNewAccessToken = async (refreshToken: string) => {
-//   const verifyRefreshToken = verify(refreshToken, envBars.JWT_REFRESH_SECRET) as JwtPayload
-//   if (!verifyRefreshToken || !verifyRefreshToken.userEmail) {
-//     throw new Error("Tumar Token Verify Kora Nai")
-//   }
-//   const isUserAxist = await User.findOne({ email: verifyRefreshToken.userEmail })
-//   if (!isUserAxist) {
-//     throw new Error("Email dose not exit")
-//   }
-//   if (isUserAxist.isActive == IsActive.Blocked) {
-//     throw new Error("Tumar Acount Already Blocked")
-//   }
-//   if (isUserAxist.isActive == IsActive.InActive) {
-//     throw new Error("Tumar Acount Already InActive")
-//   }
-//   if (isUserAxist.isDeleted) {
-//     throw new Error("Tumar Acount Already Deleted")
-//   }
-//   const jsonPaylod = {
-//     userId: isUserAxist._id,
-//     userEmail: isUserAxist.email,
-//     userRole: isUserAxist.role
-//   }
-//   const accesToken = jwt.sign(jsonPaylod, envBars.JWT_ACCESS_SECRET, { expiresIn: envBars.JWT_ACCESS_EXPIRES } as SignOptions
-//   );
-//   return {
-//     accesToken: accesToken
-//   }
-// }
 const passwordResetService = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ _id: decodedToken.userId }).select("+password");
     if (!user) {

@@ -1,11 +1,12 @@
 "use strict";
+// src/modules/user/user.validation.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateZodSchema = exports.createZodSchema = void 0;
 const zod_1 = __importDefault(require("zod"));
-const user_interface_1 = require("./user.interface");
+const user_interface_1 = require("./user.interface"); // Assuming IUserRole is imported here
 exports.createZodSchema = zod_1.default.object({
     name: zod_1.default.string()
         .min(3, { message: "Name must be at least 3 characters long" })
@@ -27,20 +28,25 @@ exports.createZodSchema = zod_1.default.object({
     address: zod_1.default.string()
         .max(200, { message: "Address cannot exceed 200 characters" })
         .optional(),
+    role: zod_1.default.enum([user_interface_1.IUserRole.Sender, user_interface_1.IUserRole.Receiver]).optional(), // <-- এখানে role ফিল্ডটি যোগ করা হয়েছে
 });
 exports.updateZodSchema = zod_1.default.object({
-    name: zod_1.default.string()
-        .min(3, { message: "Name must be at least 3 characters long" })
-        .max(50, { message: "Name cannot exceed 50 characters" }),
-    password: zod_1.default.string()
-        .min(6, { message: "Password must be at least 6 characters long" })
-        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-        .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-        .regex(/[0-9]/, { message: "Password must contain at least one digit" })
-        .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
-        .optional(),
-    address: zod_1.default.string()
-        .max(200, { message: "Address cannot exceed 200 characters" })
-        .optional(),
-    role: zod_1.default.enum(Object.values(user_interface_1.IUserRole)).optional(),
+    body: zod_1.default.object({
+        name: zod_1.default.string()
+            .min(3, { message: "Name must be at least 3 characters long" })
+            .max(50, { message: "Name cannot exceed 50 characters" })
+            .optional(),
+        password: zod_1.default.string()
+            .min(6, { message: "Password must be at least 6 characters long" })
+            .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+            .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+            .regex(/[0-9]/, { message: "Password must contain at least one digit" })
+            .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
+            .optional(),
+        address: zod_1.default.string()
+            .max(200, { message: "Address cannot exceed 200 characters" })
+            .optional(),
+        role: zod_1.default.enum([user_interface_1.IUserRole.Admin, user_interface_1.IUserRole.Sender, user_interface_1.IUserRole.Receiver]).optional(),
+        status: zod_1.default.enum(['active', 'blocked']).optional(),
+    }),
 });

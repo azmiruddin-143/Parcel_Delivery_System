@@ -19,9 +19,9 @@ export enum IParcelStatus {
 export interface IStatusLog {
   status:IParcelStatus;
   timestamp:Date;
-  location?:string; // Optional: e.g., "Dhaka Hub"
-  updatedBy?:Types.ObjectId; // User ID of admin/system who updated the status
-  note?:string; // Optional: e.g., "Customer unavailable"
+  location?:string; 
+  updatedBy?:Types.ObjectId;
+  note?:string; 
 }
 
 
@@ -30,23 +30,23 @@ export interface IParcel {
   [x: string]: any;
   _id?: Types.ObjectId;
   trackingId: string;
-  sender: Types.ObjectId; // Reference to the 'User' model
+  sender: Types.ObjectId; 
   receiver: {
     name: string;
     phone: string;
     address: string;
-    userId?: Types.ObjectId; // Optional: reference if receiver is a registered user
+    userId?: Types.ObjectId;
   };
-  parcelType: string; // e.g., "Document", "Electronics"
-  weight: number; // in KG
+  parcelType: string; 
+  weight: number; 
   deliveryAddress: string;
   currentStatus: IParcelStatus;
-  parcelFee?: number; // Optional: based on weight, distance, etc.
-  estimatedDeliveryDate?: Date; // Optional
+  parcelFee?: number; 
+  estimatedDeliveryDate?: Date; 
   isCancelled: boolean;
   isDelivered: boolean;
-  isBlocked?: boolean; // Optional: Admin can block a parcel
-  statusLogs: IStatusLog[]; // Array of status updates
+  isBlocked?: boolean; 
+  statusLogs: IStatusLog[]; 
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -57,7 +57,7 @@ export interface ICreateParcelPayload {
     name: string;
     phone: string;
     address: string;
-    userId?: string; // Can be the receiver's ID
+    userId?: string; 
   };
   parcelType: string;
   weight: number;

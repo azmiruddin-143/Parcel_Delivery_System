@@ -12,11 +12,8 @@ import { JwtPayload } from "jsonwebtoken";
 const loginUserService = async (payload: Partial<IUser>) => {
   const { email, password } = payload
 
-//   console.log("email Or Password from payload:", email,password);
-
-
   const isUserAxist = await User.findOne({ email }).select("+password");
-//   console.log("Password from DB:", isUserAxist.password as string);
+
 
   if (!isUserAxist) {
     throw new Error("Email dose not exit")
@@ -39,46 +36,6 @@ const loginUserService = async (payload: Partial<IUser>) => {
 }
 
 
-
-// const getNewAccessToken = async (refreshToken: string) => {
-
-//   const verifyRefreshToken = verify(refreshToken, envBars.JWT_REFRESH_SECRET) as JwtPayload
-
-//   if (!verifyRefreshToken || !verifyRefreshToken.userEmail) {
-//     throw new Error("Tumar Token Verify Kora Nai")
-//   }
-
-//   const isUserAxist = await User.findOne({ email: verifyRefreshToken.userEmail })
-
-
-//   if (!isUserAxist) {
-//     throw new Error("Email dose not exit")
-//   }
-
-//   if (isUserAxist.isActive == IsActive.Blocked) {
-//     throw new Error("Tumar Acount Already Blocked")
-//   }
-//   if (isUserAxist.isActive == IsActive.InActive) {
-//     throw new Error("Tumar Acount Already InActive")
-//   }
-//   if (isUserAxist.isDeleted) {
-//     throw new Error("Tumar Acount Already Deleted")
-//   }
-
-
-//   const jsonPaylod = {
-//     userId: isUserAxist._id,
-//     userEmail: isUserAxist.email,
-//     userRole: isUserAxist.role
-//   }
-
-//   const accesToken = jwt.sign(jsonPaylod, envBars.JWT_ACCESS_SECRET, { expiresIn: envBars.JWT_ACCESS_EXPIRES } as SignOptions
-//   );
-
-//   return {
-//     accesToken: accesToken
-//   }
-// }
 
 
 const passwordResetService = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload ) => {
