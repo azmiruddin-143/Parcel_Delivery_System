@@ -1,38 +1,33 @@
-Parcel Delivery System API
+📦 Parcel Delivery System API
+
 🌟 Project Overview
-This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It is designed for a parcel delivery system where users can perform various tasks as Senders, Receivers, and Admins.
+
+This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It supports a parcel delivery system with role-based access for Senders, Receivers, and Admins.
 
 🛠️ Technology Stack
-The application is built using the following technologies:
 
-Runtime: Node.js
-
-Framework: Express.js
-
-Language: TypeScript
-
-Database: MongoDB
-
-Database Library: Mongoose
-
-Security: JWT (JSON Web Tokens), bcrypt
-
-Validation: Zod
+{
+  "Runtime": "Node.js",
+  "Framework": "Express.js",
+  "Language": "TypeScript",
+  "Database": "MongoDB",
+  "Database Library": "Mongoose",
+  "Security": ["JWT", "bcrypt"],
+  "Validation": "Zod"
+}
 
 📦 Local Setup
-Follow these steps to set up the project on your local machine:
 
-Clone the Repository:
+1. Clone the Repository
 
 git clone <your-repo-link>
 cd parcel-delivery-system
 
-Install Dependencies:
+2. Install Dependencies
 
 npm install
 
-Create an Environment File:
-Create a .env file in the project root and set the necessary variables.
+3. Create .env File
 
 PORT=5000
 DATABASE_URL=mongodb://localhost:27017/parcel_db
@@ -40,35 +35,28 @@ JWT_SECRET=YOUR_VERY_SECRET_KEY
 JWT_EXPIRES_IN=7d
 BCRYPT_SALT_ROUNDS=12
 
-Start the Server:
+4. Start the Server
 
 npm run dev
 
-Your server will run on http://localhost:5000.
+The server will run at: http://localhost:5000
 
-🔑 ADMIN ACCESS
-For testing and administrative purposes, you can log in with the following admin credentials:
+🔑 Admin Access (for Testing)
 
-Key
+{
+  "email": "azmiruddin05@gmail.com",
+  "password": "Azmir1@"
+}
 
-Value
+🚀 API Base URL
 
-Email
-
-azmiruddin05@gmail.com
-
-Password
-
-Azmir1@
-
-🚀 API Documentation
-The base URL for our backend API is:
 https://parcel-delivery-system-nine.vercel.app/api/v1
 
 🔐 Authentication Routes
-POST /auth/register: Register a new user (Sender/Receiver).
 
-Body:
+Register
+
+POST /auth/register
 
 {
   "name": "John Doe",
@@ -77,32 +65,33 @@ Body:
   "role": "Sender"
 }
 
-POST /auth/login: Log in a user.
+Login
 
-Body:
+POST /auth/login
 
 {
   "email": "john.doe@example.com",
   "password": "Password@123"
 }
 
-POST /auth/reset-password: Reset the password of the logged-in user.
+Reset Password
 
-Body:
+POST /auth/reset-password
 
 {
   "oldPassword": "Password@123",
   "newPassword": "NewPassword@123"
 }
 
-POST /auth/logout: Log out a user.
+Logout
 
-This endpoint does not require a request body.
+POST /auth/logout (No body required)
 
 📦 Parcel Routes
-POST /parcels: Create a new parcel. Access: Sender
 
-Body:
+Create Parcel (Sender)
+
+POST /parcels
 
 {
   "receiver": {
@@ -116,19 +105,25 @@ Body:
   "deliveryAddress": "123 Test Street, Dhaka"
 }
 
-GET /parcels: View the list of all parcels. Access: Admin
+All Parcels (Admin)
 
-GET /parcels/my: View all parcels sent by you. Access: Sender
+GET /parcels
 
-GET /parcels/incoming: View all parcels addressed to you. Access: Receiver
+My Parcels (Sender)
 
-PATCH /parcels/:id/cancel: Cancel a parcel (before delivery starts). Access: Sender
+GET /parcels/my
 
-This endpoint does not require a request body.
+Incoming Parcels (Receiver)
 
-PATCH /parcels/:id/status: Update a parcel's status. Access: Admin
+GET /parcels/incoming
 
-Body:
+Cancel Parcel (Sender)
+
+PATCH /parcels/:id/cancel (No body required)
+
+Update Parcel Status (Admin)
+
+PATCH /parcels/:id/status
 
 {
   "status": "Approved",
@@ -136,10 +131,11 @@ Body:
   "note": "Parcel has been approved for delivery."
 }
 
-🧑 User Routes
-POST /users/register: Register a new user (Sender/Receiver). Access: Public
+👤 User Routes
 
-Body:
+Register (Public)
+
+POST /users/register
 
 {
   "name": "Test User",
@@ -148,28 +144,38 @@ Body:
   "role": "Sender"
 }
 
-GET /users/all-users: View the list of all users. Access: Admin
+All Users (Admin)
 
-GET /users/:id: Get a single user's details. Access: Any Authenticated
+GET /users/all-users
 
-PATCH /users/:id: Update a user's details. Access: Any Authenticated
+Single User (Authenticated)
 
-Body:
+GET /users/:id
+
+Update User (Authenticated)
+
+PATCH /users/:id
 
 {
   "name": "Updated Name",
-  "email": "User email must requred"
+  "phone": "01655667788"
 }
 
-PATCH /users/:id/status: Change a user's status (Active/Blocked). Access: Admin
+Change User Status (Admin)
 
-Body:
+PATCH /users/:id/status
 
 {
   "status": "Blocked"
 }
 
-DELETE /users/:id: Delete a user. Access: Admin
+Delete User (Admin)
 
-✅ Testing and Demo
-All API endpoints for this project have been tested using Postman. A screen-recorded video will be provided to demonstrate all features, showcasing the complete functionality of the project.
+DELETE /users/:id
+
+✅ Testing & Demo
+
+All endpoints have been tested with Postman. A demo video showcasing all features is available.
+
+🔒 Secure, 🚀 Fast, and ⚙️ Modular — this Parcel Delivery API is built for real-world production use.
+
