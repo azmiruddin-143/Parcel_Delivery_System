@@ -164,6 +164,7 @@ The server will run at: http://localhost:5000
 ## PATCH /users/:id
 
 - "name": "Updated Name",
+- "email: "user email requerd to update"
 - "phone": "01655667788"
 
 
