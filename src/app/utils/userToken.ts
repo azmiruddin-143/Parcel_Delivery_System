@@ -9,12 +9,10 @@ import { envVars } from "../config/env";
           userEmail: user.email,
           userRole: user.role
         }
-      
-      
+    
         const accesToken = jwt.sign(jsonPaylod, envVars.JWT_ACCESS_SECRET, { expiresIn: envVars.JWT_REFRESH_EXPIRES } as SignOptions
         );
       
-       
      return{
         accesToken,
      

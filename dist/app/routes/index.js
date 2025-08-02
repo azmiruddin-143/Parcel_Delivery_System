@@ -8,7 +8,7 @@ const parcel_route_1 = require("../modules/parcel/parcel.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
-        path: "/user",
+        path: "/users",
         route: user_route_1.UserRoutes
     },
     {
@@ -16,7 +16,7 @@ const moduleRoutes = [
         route: auth_route_1.authRoutes
     },
     {
-        path: "/parcel",
+        path: "/parcels",
         route: parcel_route_1.parcelRoutes
     },
 ];
