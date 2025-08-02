@@ -2,7 +2,7 @@
 
 🌟 Project Overview
 
-This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It supports a parcel delivery system with role-based access for Senders, Receivers, and Admins.
+Parcel Delivery System API is a robust and secure backend application designed to handle all operations of a modern courier service. The platform offers a seamless and efficient way for users to register as senders or receivers, create parcel requests, and track their delivery status in real-time. Admins have complete control over user management and delivery status updates, ensuring a streamlined operation..
 
 # Technology Stack
 
@@ -14,6 +14,15 @@ This project is a robust, secure, and modular backend API built with Express.js 
 - "Security": ["JWT", "bcrypt"],
 - "Validation": "Zod"
  
+
+# ✨ Core Features
+- Role-Based Access Control: Advanced role management with dedicated features for Admins, Senders, and Receivers, ensuring personalized functionality for each role.
+- Secure Authentication with Token Management: Robust authentication system with JSON Web Tokens (JWT) to enhance security and manage user sessions effectively.
+- Comprehensive Parcel Management: An organized system for creating, viewing, and managing parcels with real-time status updates.
+- Real-Time Status Tracking: Every parcel's status change is logged and can be tracked by both senders and receivers for complete transparency.
+- Parcel Cancellation Logic: Senders can cancel parcels only if they have not yet been dispatched, ensuring business rules are followed.
+- User & Admin Dashboards: Admin dashboard for managing all users and parcels, including blocking users and updating parcel statuses with ease.
+- RESTful API Design: A clean and intuitive API design that uses standard REST principles for easy integration and use.
 
 📦 Local Setup
 
