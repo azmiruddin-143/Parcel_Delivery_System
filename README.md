@@ -4,21 +4,20 @@
 
 This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It supports a parcel delivery system with role-based access for Senders, Receivers, and Admins.
 
-🛠️ Technology Stack
+# Technology Stack
 
-# {
-  "Runtime": "Node.js",
-  "Framework": "Express.js",
-  "Language": "TypeScript",
-  "Database": "MongoDB",
-  "Database Library": "Mongoose",
-  "Security": ["JWT", "bcrypt"],
-  "Validation": "Zod"
-# }
+- "Runtime": "Node.js",
+- "Framework": "Express.js",
+- "Language": "TypeScript",
+- "Database": "MongoDB",
+- "Database Library": "Mongoose",
+- "Security": ["JWT", "bcrypt"],
+- "Validation": "Zod"
+ 
 
 📦 Local Setup
 
-1. Clone the Repository
+ Clone the Repository
 
 git clone <your-repo-link>
 cd parcel-delivery-system
@@ -72,106 +71,105 @@ The server will run at: http://localhost:5000
 - "password": "Password@123"
 
 
-Reset Password
+## Reset Password
 
-POST /auth/reset-password
+## POST /auth/reset-password
 
-{
-  "oldPassword": "Password@123",
-  "newPassword": "NewPassword@123"
-}
+- oldPassword": "Password@123",
+- newPassword": "NewPassword@123"
 
-Logout
 
-POST /auth/logout (No body required)
+## Logout
 
-📦 Parcel Routes
+## POST /auth/logout (No body required)
 
-Create Parcel (Sender)
+# 📦 Parcel Routes
 
-POST /parcels
+## Create Parcel (Sender)
 
-{
-  "receiver": {
-    "name": "Jane Smith",
-    "phone": "01911223344",
-    "address": "123 Test Street, Dhaka",
-    "userId": "60c72b2f9c1d44001c8c8c8c"
-  },
-  "parcelType": "Electronics",
-  "weight": 1.5,
-  "deliveryAddress": "123 Test Street, Dhaka"
-}
+## POST /parcels
 
-All Parcels (Admin)
 
-GET /parcels
+- "receiver": {
+- "name": "Jane Smith",
+- "phone": "01911223344",
+- "address": "123 Test Street, Dhaka",
+- "userId": "60c72b2f9c1d44001c8c8c8c"
+- },
+- "parcelType": "Electronics",
+- "weight": 1.5,
+- "deliveryAddress": "123 Test Street, Dhaka"
 
-My Parcels (Sender)
 
-GET /parcels/my
+# All Parcels (Admin)
 
-Incoming Parcels (Receiver)
+## GET /parcels
 
-GET /parcels/incoming
+## My Parcels (Sender)
 
-Cancel Parcel (Sender)
+## GET /parcels/my
 
-PATCH /parcels/:id/cancel (No body required)
+## Incoming Parcels (Receiver)
 
-Update Parcel Status (Admin)
+## GET /parcels/incoming
 
-PATCH /parcels/:id/status
+## Cancel Parcel (Sender)
 
-{
-  "status": "Approved",
-  "location": "Dhaka Hub",
-  "note": "Parcel has been approved for delivery."
-}
+## PATCH /parcels/:id/cancel 
 
-👤 User Routes
+- "status": "Cancelled",
+- "location": "Dhaka Hub",
+- "note": "Parcel has been approved for delivery."
 
-Register (Public)
 
-POST /users/register
+## Update Parcel Status (Admin)
 
-{
-  "name": "Test User",
-  "email": "testuser@example.com",
-  "password": "Password@123",
-  "role": "Sender"
-}
+## PATCH /parcels/:id/status
 
-All Users (Admin)
+- "status": "Approved",
+- "location": "Dhaka Hub",
+- "note": "Parcel has been approved for delivery."
 
-GET /users/all-users
 
-Single User (Authenticated)
+# 👤 User Routes
 
-GET /users/:id
+## Register (Public)
 
-Update User (Authenticated)
+## POST /users/register
 
-PATCH /users/:id
+- "name": "Test User",
+- "email": "testuser@example.com",
+- "password": "Password@123",
+- "role": "Sender"
 
-{
-  "name": "Updated Name",
-  "phone": "01655667788"
-}
+## All Users (Admin)
 
-Change User Status (Admin)
+## GET /users/all-users
 
-PATCH /users/:id/status
+## Single User (Authenticated)
 
-{
-  "status": "Blocked"
-}
+## GET /users/:id
 
-Delete User (Admin)
+## Update User (Authenticated)
 
-DELETE /users/:id
+## PATCH /users/:id
 
-✅ Testing & Demo
+- "name": "Updated Name",
+- "phone": "01655667788"
+
+
+## Change User Status (Admin)
+
+## PATCH /users/:id/status
+
+- "status": "Blocked"
+
+
+## Delete User (Admin)
+
+## DELETE /users/:id
+
+Testing & Demo
 
 All endpoints have been tested with Postman. A demo video showcasing all features is available.
 
