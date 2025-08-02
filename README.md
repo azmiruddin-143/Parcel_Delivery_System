@@ -1,181 +1,238 @@
-📦 Parcel Delivery System API
-
+🚚 Parcel Delivery System API
 🌟 Project Overview
+Parcel Delivery System API is a robust and secure backend application designed to handle all operations of a modern courier service. The platform offers a seamless and efficient way for users to register as senders or receivers, create parcel requests, and track their delivery status in real-time. Admins have complete control over user management and delivery status updates, ensuring a streamlined operation.
 
-This project is a robust, secure, and modular backend API built with Express.js and TypeScript. It supports a parcel delivery system with role-based access for Senders, Receivers, and Admins.
+🚀 Live Project Link
+🔗 Live Site https://parcel-delivery-system-nine
 
-🛠️ Technology Stack
+🛠️ Technologies Used
+Backend: Node.js, Express.js, TypeScript
 
+Database: MongoDB
+
+Database Library: Mongoose
+
+Security: JWT (JSON Web Tokens), bcrypt
+
+Validation: Zod
+
+Deployment: Vercel
+
+✨ Core Features
+✅ Role-Based Access Control: Advanced role management with dedicated features for Admins, Senders, and Receivers, ensuring personalized functionality for each role.
+✅ Secure Authentication with Token Management: Robust authentication system with JSON Web Tokens (JWT) to enhance security and manage user sessions effectively.
+✅ Comprehensive Parcel Management: An organized system for creating, viewing, and managing parcels with real-time status updates.
+✅ Real-Time Status Tracking: Every parcel's status change is logged and can be tracked by both senders and receivers for complete transparency.
+✅ Parcel Cancellation Logic: Senders can cancel parcels only if they have not yet been dispatched, ensuring business rules are followed.
+✅ User & Admin Dashboards: Admin dashboard for managing all users and parcels, including blocking users and updating parcel statuses with ease.
+✅ RESTful API Design: A clean and intuitive API design that uses standard REST principles for easy integration and use.
+
+📦 Dependencies Used
 {
-  "Runtime": "Node.js",
-  "Framework": "Express.js",
-  "Language": "TypeScript",
-  "Database": "MongoDB",
-  "Database Library": "Mongoose",
-  "Security": ["JWT", "bcrypt"],
-  "Validation": "Zod"
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.3"
+  }
 }
 
-📦 Local Setup
-
-1. Clone the Repository
+🛠️ How to Run Locally
+Clone the repository:
 
 git clone <your-repo-link>
+
+Navigate to the project folder:
+
 cd parcel-delivery-system
 
-2. Install Dependencies
+Install dependencies:
 
 npm install
 
-3. Create .env File
-
-PORT=5000
-DATABASE_URL=mongodb://localhost:27017/parcel_db
-JWT_SECRET=YOUR_VERY_SECRET_KEY
-JWT_EXPIRES_IN=7d
-BCRYPT_SALT_ROUNDS=12
-
-4. Start the Server
+Start the development server:
 
 npm run dev
 
-The server will run at: http://localhost:5000
+Your project will run on http://localhost:5000 (or the port specified in your .env file).
 
-🔑 Admin Access (for Testing)
+🔑 ADMIN ACCESS
+For testing and administrative purposes, you can log in with the following admin credentials:
 
-{
-  "email": "azmiruddin05@gmail.com",
-  "password": "Azmir1@"
-}
+Key
 
-🚀 API Base URL
+Value
 
+Email
+
+azmiruddin05@gmail.com
+
+Password
+
+Azmir1@
+
+🚀 API Documentation
+The base URL for our backend API is:
 https://parcel-delivery-system-nine.vercel.app/api/v1
 
 🔐 Authentication Routes
+মেথড
 
-Register
+এন্ডপয়েন্ট
 
-POST /auth/register
+অ্যাক্সেস
 
-{
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "password": "Password@123",
-  "role": "Sender"
-}
+বডি ডেটা
 
-Login
+POST
 
-POST /auth/login
+/auth/register
 
-{
-  "email": "john.doe@example.com",
-  "password": "Password@123"
-}
+Public
 
-Reset Password
+{"name": "...", "email": "...", "password": "...", "role": "Sender"}
 
-POST /auth/reset-password
+POST
 
-{
-  "oldPassword": "Password@123",
-  "newPassword": "NewPassword@123"
-}
+/auth/login
 
-Logout
+Public
 
-POST /auth/logout (No body required)
+{"email": "...", "password": "..."}
+
+POST
+
+/auth/reset-password
+
+Protected
+
+{"oldPassword": "...", "newPassword": "..."}
+
+POST
+
+/auth/logout
+
+Protected
+
+No Body Required
 
 📦 Parcel Routes
+মেথড
 
-Create Parcel (Sender)
+এন্ডপয়েন্ট
 
-POST /parcels
+অ্যাক্সেস
 
-{
-  "receiver": {
-    "name": "Jane Smith",
-    "phone": "01911223344",
-    "address": "123 Test Street, Dhaka",
-    "userId": "60c72b2f9c1d44001c8c8c8c"
-  },
-  "parcelType": "Electronics",
-  "weight": 1.5,
-  "deliveryAddress": "123 Test Street, Dhaka"
-}
+বডি ডেটা
 
-All Parcels (Admin)
+POST
 
-GET /parcels
+/parcels
 
-My Parcels (Sender)
+Sender
 
-GET /parcels/my
+{"receiver": {"name": "...", "phone": "...", "address": "...", "userId": "..."}, "parcelType": "...", "weight": ..., "deliveryAddress": "..."}
 
-Incoming Parcels (Receiver)
+GET
 
-GET /parcels/incoming
+/parcels
 
-Cancel Parcel (Sender)
+Admin
 
-PATCH /parcels/:id/cancel (No body required)
+No Body Required
 
-Update Parcel Status (Admin)
+GET
 
-PATCH /parcels/:id/status
+/parcels/my
 
-{
-  "status": "Approved",
-  "location": "Dhaka Hub",
-  "note": "Parcel has been approved for delivery."
-}
+Sender
 
-👤 User Routes
+No Body Required
 
-Register (Public)
+GET
 
-POST /users/register
+/parcels/incoming
 
-{
-  "name": "Test User",
-  "email": "testuser@example.com",
-  "password": "Password@123",
-  "role": "Sender"
-}
+Receiver
 
-All Users (Admin)
+No Body Required
 
-GET /users/all-users
+PATCH
 
-Single User (Authenticated)
+/parcels/:id/cancel
 
-GET /users/:id
+Sender
 
-Update User (Authenticated)
+{"status": "...", "location": "...", "note": "..."}
 
-PATCH /users/:id
+PATCH
 
-{
-  "name": "Updated Name",
-  "phone": "01655667788"
-}
+/parcels/:id/status
 
-Change User Status (Admin)
+Admin
 
-PATCH /users/:id/status
+{"status": "...", "location": "...", "note": "..."}
 
-{
-  "status": "Blocked"
-}
+🧑 User Routes
+মেথড
 
-Delete User (Admin)
+এন্ডপয়েন্ট
 
-DELETE /users/:id
+অ্যাক্সেস
 
-✅ Testing & Demo
+বডি ডেটা
 
-All endpoints have been tested with Postman. A demo video showcasing all features is available.
+GET
 
-🔒 Secure, 🚀 Fast, and ⚙️ Modular — this Parcel Delivery API is built for real-world production use.
+/users/all-users
 
+Admin
+
+No Body Required
+
+GET
+
+/users/:id
+
+Any Authenticated
+
+No Body Required
+
+PATCH
+
+/users/:id
+
+Any Authenticated
+
+{"name": "...", "phone": "..."}
+
+PATCH
+
+/users/:id/status
+
+Admin
+
+{"status": "Blocked"}
+
+DELETE
+
+/users/:id
+
+Admin
+
+No Body Required
+
+Testing and Demo
+All API endpoints for this project have been tested using Postman. A screen-recorded video will be provided to demonstrate all features, showcasing the complete functionality of the project.
