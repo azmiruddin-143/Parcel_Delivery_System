@@ -171,11 +171,11 @@
 //   const currentStatus = parcel.currentStatus;
 //   const newStatus = payload.status;
 
-  
+
 //   if (
 //     (currentStatus === IParcelStatus.Requested && newStatus !== IParcelStatus.Approved && newStatus !== IParcelStatus.Cancelled && newStatus !== IParcelStatus.Held) ||
 //     (currentStatus === IParcelStatus.Approved && newStatus !== IParcelStatus.Dispatched && newStatus !== IParcelStatus.Cancelled && newStatus !== IParcelStatus.Held) ||
-  
+
 //     (currentStatus === IParcelStatus.Delivered)
 //   ) {
 //     throw new AppError(httpStatus.BAD_REQUEST, `Cannot change status from ${currentStatus} to ${newStatus}`);
@@ -283,7 +283,7 @@ const createParcel = async (
     parcelType: payload.parcelType,
     weight: payload.weight,
     deliveryAddress: payload.deliveryAddress,
-    
+
     // Core parcel data
     trackingId: generateTrackingId(),
     sender: new Types.ObjectId(senderId),
@@ -312,9 +312,23 @@ const createParcel = async (
 
 
 
-const getAllParcels = async (): Promise<IParcel[]> => {
-  const parcels = await Parcel.find({}).populate('sender').populate('receiver.userId')
-  return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// const getAllParcels = async (): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({}).populate('sender').populate('receiver.userId')
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getAllParcels = async (filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const total = await Parcel.countDocuments(filters);
+    const parcels = await Parcel.find(filters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+
+    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+    const meta = { page, limit, total };
+
+    return { data, meta };
 };
 
 
@@ -339,8 +353,8 @@ const cancelParcel = async (parcelId: string, senderId: string): Promise<IParcel
     throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
   }
 
- 
-  if (parcel.sender.toString() !== senderId.toString()) { 
+
+  if (parcel.sender.toString() !== senderId.toString()) {
     throw new AppError(httpStatus.FORBIDDEN, 'You are not authorized to cancel this parcel');
   }
 
@@ -348,7 +362,7 @@ const cancelParcel = async (parcelId: string, senderId: string): Promise<IParcel
   if (parcel.currentStatus !== IParcelStatus.Requested && parcel.currentStatus !== IParcelStatus.Approved) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Parcel cannot be cancelled as it has already been dispatched');
   }
-  
+
   const updatedParcel = await Parcel.findByIdAndUpdate(
     parcelId,
     {
@@ -358,7 +372,7 @@ const cancelParcel = async (parcelId: string, senderId: string): Promise<IParcel
         statusLogs: {
           status: IParcelStatus.Cancelled,
           timestamp: new Date(),
-          updatedBy: new Types.ObjectId(senderId.toString()), 
+          updatedBy: new Types.ObjectId(senderId.toString()),
           note: 'Parcel was cancelled by sender',
         },
       },
@@ -382,7 +396,7 @@ const updateParcelStatus = async (
 
   const currentStatus = parcel.currentStatus;
   const newStatus = payload.status;
-  
+
   if (
     (currentStatus === IParcelStatus.Requested && newStatus !== IParcelStatus.Approved && newStatus !== IParcelStatus.Cancelled && newStatus !== IParcelStatus.Held) ||
     (currentStatus === IParcelStatus.Approved && newStatus !== IParcelStatus.Dispatched && newStatus !== IParcelStatus.Cancelled && newStatus !== IParcelStatus.Held) ||
@@ -419,14 +433,132 @@ const updateParcelStatus = async (
 
 
 
-const getMyParcels = async (senderId: string): Promise<IParcel[]> => {
-  const parcels = await Parcel.find({ sender: new Types.ObjectId(senderId) }).populate('sender').populate('receiver.userId')
-  return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// const getMyParcels = async (senderId: string): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({ sender: new Types.ObjectId(senderId) }).populate('sender').populate('receiver.userId')
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getMyParcels = async (senderId: string, filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const queryFilters = { ...filters, sender: new Types.ObjectId(senderId) };
+    const total = await Parcel.countDocuments(queryFilters);
+    const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+
+    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+    const meta = { page, limit, total };
+
+    return { data, meta };
+};
+// const getIncomingParcels = async (receiverId: string): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({ 'receiver.userId': new Types.ObjectId(receiverId) }).populate('sender').populate('receiver.userId');
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getIncomingParcels = async (receiverId: string, filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const queryFilters = { ...filters, 'receiver.userId': new Types.ObjectId(receiverId) };
+    const total = await Parcel.countDocuments(queryFilters);
+    const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+
+    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+    const meta = { page, limit, total };
+
+    return { data, meta };
 };
 
-const getIncomingParcels = async (receiverId: string): Promise<IParcel[]> => {
-  const parcels = await Parcel.find({ 'receiver.userId': new Types.ObjectId(receiverId) }).populate('sender').populate('receiver.userId');
-  return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+const confirmDelivery = async (parcelId: string, receiverId: string): Promise<IParcel> => {
+  const parcel = await Parcel.findById(parcelId);
+
+  if (!parcel) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
+  }
+
+  // Authorization: Check if the logged-in user is the actual receiver
+  if (parcel.receiver.userId?.toString() !== receiverId.toString()) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You are not authorized to confirm this delivery');
+  }
+
+  // Business Rule: Check if the parcel is in the correct status for delivery confirmation
+  if (parcel.currentStatus !== IParcelStatus.InTransit) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Parcel status must be "In Transit" to be confirmed as delivered.');
+  }
+
+  // Update parcel status
+  const updatedParcel = await Parcel.findByIdAndUpdate(
+    parcelId,
+    {
+      isDelivered: true,
+      currentStatus: IParcelStatus.Delivered,
+      $push: {
+        statusLogs: {
+          status: IParcelStatus.Delivered,
+          timestamp: new Date(),
+          updatedBy: new Types.ObjectId(receiverId.toString()),
+          note: 'Delivery confirmed by receiver.',
+        },
+      },
+    },
+    { new: true }
+  );
+
+  return prepareParcelResponse(updatedParcel as IParcel);
+};
+
+
+const getPublicParcel = async (trackingId: string): Promise<IParcel | null> => {
+  const parcel = await Parcel.findOne({ trackingId }).lean();
+  if (!parcel) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
+  }
+
+  // You might want to remove sensitive data like sender/receiver IDs here
+  // But since you're using lean(), it's a good practice to ensure it's not exposed.
+  // For now, prepareParcelResponse should be sufficient.
+  return (parcel as IParcel);
+};
+
+
+const getParcelStats = async (): Promise<{ totalParcels: number; deliveredCount: number; inTransitCount: number }> => {
+  const stats = await Parcel.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalParcels: { $sum: 1 },
+        deliveredCount: {
+          $sum: {
+            $cond: [{ $eq: ['$currentStatus', IParcelStatus.Delivered] }, 1, 0]
+          }
+        },
+        inTransitCount: {
+          $sum: {
+            $cond: [{ $eq: ['$currentStatus', IParcelStatus.InTransit] }, 1, 0]
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        totalParcels: 1,
+        deliveredCount: 1,
+        inTransitCount: 1
+      }
+    }
+  ]);
+
+  if (stats.length === 0) {
+    return { totalParcels: 0, deliveredCount: 0, inTransitCount: 0 };
+  }
+
+  return stats[0];
 };
 
 
@@ -448,4 +580,7 @@ export const ParcelServices = {
   cancelParcel,
   updateParcelStatus,
   deleteParcel,
+  confirmDelivery,
+  getPublicParcel,
+  getParcelStats
 };

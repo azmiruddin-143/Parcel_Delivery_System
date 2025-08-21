@@ -36,12 +36,12 @@ cd parcel-delivery-system
 npm install
 
 3. Create .env File
-
+<!-- 
 PORT=5000
 DATABASE_URL=mongodb://localhost:27017/parcel_db
 JWT_SECRET=YOUR_VERY_SECRET_KEY
 JWT_EXPIRES_IN=7d
-BCRYPT_SALT_ROUNDS=12
+BCRYPT_SALT_ROUNDS=12 -->
 
 4. Start the Server
 
@@ -49,10 +49,10 @@ npm run dev
 
 The server will run at: http://localhost:5000
 
-# 🔑 Admin Access (for Testing)
+<!-- # 🔑 Admin Access (for Testing)
 
 - "email": "azmiruddin05@gmail.com",
-- "password": "Azmir1@"
+- "password": "Azmir1@" -->
 
 
 🚀 API Base URL

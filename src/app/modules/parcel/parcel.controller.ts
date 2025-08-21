@@ -7,12 +7,12 @@ import { ParcelServices } from "./parcel.service";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-     if (!req.user) {
+    if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
-    
-    const senderId = req.user._id; 
-    
+
+    const senderId = req.user._id;
+
     const parcel = await ParcelServices.createParcel(req.body, senderId)
 
     sendResponse(res, {
@@ -26,7 +26,7 @@ const createParcel = catchAsync(async (req: Request, res: Response, next: NextFu
 
 const updateParcelStatus = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-     if (!req.user) {
+    if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
     const adminId = req.user._id;
@@ -49,7 +49,7 @@ const cancelParcel = catchAsync(async (req: Request, res: Response) => {
         throw new Error('Unauthorized: User not found in request');
     }
     const senderId = req.user._id;
-  
+
 
     const result = await ParcelServices.cancelParcel(id, senderId);
 
@@ -62,24 +62,32 @@ const cancelParcel = catchAsync(async (req: Request, res: Response) => {
 });
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await ParcelServices.getAllParcels();
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10,
+    };
+
+    const result = await ParcelServices.getAllParcels(filters, pagination);
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
         message: "All Parcel Retrieved Successfully",
         data: result,
+        // data: result.data,
+        // meta: result.meta,
     })
 })
 
 
 const getSingleParcel = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-     if (!req.user) {
+    if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
     const user = req.user;
-    
+
     const result = await ParcelServices.getSingleParcel(id, user);
     sendResponse(res, {
         statusCode: 200,
@@ -93,20 +101,26 @@ const getSingleParcel = catchAsync(async (req: Request, res: Response) => {
 
 
 const getMyParcels = catchAsync(async (req: Request, res: Response) => {
-     if (!req.user) {
+    if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
+
     const senderId = req.user._id;
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10,
+    };
 
-
-
-    const result = await ParcelServices.getMyParcels(senderId);
+    const result = await ParcelServices.getMyParcels(senderId.toString(), filters, pagination)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Sender\'s parcels retrieved successfully',
         data: result,
+        // data: result.data,
+        // meta: result.meta,
     });
 });
 
@@ -114,16 +128,65 @@ const getMyParcels = catchAsync(async (req: Request, res: Response) => {
  * Controller for retrieving parcels intended for the authenticated receiver.
  */
 const getIncomingParcels = catchAsync(async (req: Request, res: Response) => {
-     if (!req.user) {
+    if (!req.user) {
         throw new Error('Unauthorized: User not found in request');
     }
     const receiverId = req.user._id;
-    const result = await ParcelServices.getIncomingParcels(receiverId);
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10,
+    };
+
+    const result = await ParcelServices.getIncomingParcels(receiverId.toString(), filters, pagination);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Receiver\'s incoming parcels retrieved successfully',
+        data: result,
+        // data: result.data,
+        // meta: result.meta,
+    });
+});
+
+
+const confirmDelivery = catchAsync(async (req: Request, res: Response) => {
+    if (!req.user) {
+        throw new Error('Unauthorized: User not found in request');
+    }
+    const { id } = req.params;
+    const receiverId = req.user._id;
+    const result = await ParcelServices.confirmDelivery(id, receiverId as string);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Delivery confirmed successfully',
+        data: result,
+    });
+});
+
+
+const getPublicParcel = catchAsync(async (req: Request, res: Response) => {
+    const { trackingId } = req.params;
+    const result = await ParcelServices.getPublicParcel(trackingId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Parcel details retrieved successfully',
+        data: result,
+    });
+});
+
+
+const getParcelStats = catchAsync(async (req: Request, res: Response) => {
+    const result = await ParcelServices.getParcelStats();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Parcel statistics retrieved successfully',
         data: result,
     });
 });
@@ -149,7 +212,10 @@ export const ParcelControllers = {
     cancelParcel,
     getSingleParcel,
     getMyParcels,
-    getIncomingParcels
+    getIncomingParcels,
+    confirmDelivery,
+    getPublicParcel,
+    getParcelStats
 
 }
 
