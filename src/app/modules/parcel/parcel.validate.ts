@@ -14,6 +14,8 @@ export const createParcelZodSchema = z.object({
             .regex(/^01[0-9]{9}$/, 'Invalid Bangladeshi phone number')
             .min(11, 'Phone number must be 11 digits')
             .max(11, 'Phone number must be 11 digits'),
+            email: z.string()
+        .email({ message: "Invalid email address" }),
         address: z.string().min(1, 'Receiver address is required').max(200, 'Receiver address cannot exceed 200 characters'),
         userId: z.string().optional(),
     }).strict(), // .strict() ensures no extra properties are allowed
@@ -21,6 +23,15 @@ export const createParcelZodSchema = z.object({
     weight: z.number().positive('Weight must be a positive number'),
     deliveryAddress: z.string().min(1, 'Delivery address is required').max(200, 'Delivery address cannot exceed 200 characters'),
 })
+
+
+// New Zod schema for blocking a parcel
+export const updateParcelBlockStatusZodSchema = z.object({
+  body: z.object({
+    isBlocked: z.boolean(),
+    note: z.string().optional(),
+  }),
+});
 
 
 export const updateParcelStatusZodSchema = z.object({

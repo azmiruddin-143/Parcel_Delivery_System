@@ -18,7 +18,10 @@ app.use((0, express_session_1.default)({
     saveUninitialized: false
 }));
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: env_1.envVars.FRONTEND_URL,
+    credentials: true
+}));
 app.use('/api/v1', routes_1.router);
 app.get('/', (req, res) => {
     res.send("Welcome to Parcel Delivery System");

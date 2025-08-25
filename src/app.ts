@@ -1,6 +1,7 @@
 
 
 import cors from "cors"
+import cookieParser from "cookie-parser";
 import express, { Request, Response } from "express"
 import { router } from "./app/routes"
 import expressSession from "express-session"
@@ -17,7 +18,12 @@ app.use(expressSession({
 }))
 
 app.use(express.json())
-app.use(cors())
+app.use(cookieParser());
+app.use(cors({
+    origin: envVars.FRONTEND_URL,
+    credentials: true
+}))
+
 app.use('/api/v1',router)
 
 app.get('/', (req: Request, res: Response) => {

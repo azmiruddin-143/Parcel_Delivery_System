@@ -42,6 +42,30 @@ const updateParcelStatus = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateParcelBlockStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const adminId = req.user?.userId;
+  let isBlocked = false;
+  let note = '';
+
+  // Check the URL path to determine if it's a block or unblock request
+  if (req.originalUrl.includes('/block')) {
+    isBlocked = true;
+    note = 'Parcel was blocked by admin.';
+  } else if (req.originalUrl.includes('/unblock')) {
+    isBlocked = false;
+    note = 'Parcel was unblocked by admin.';
+  }
+
+    const result = await ParcelServices.updateParcelBlockStatus(id, isBlocked, adminId, note);
+    res.status(httpStatus.OK).json({
+      success: true,
+      message: `Parcel ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+      data: result,
+    });
+  
+};
+
 const cancelParcel = catchAsync(async (req: Request, res: Response) => {
 
     const { id } = req.params;
@@ -65,7 +89,7 @@ const getAllParcel = catchAsync(async (req: Request, res: Response, next: NextFu
     const filters = req.query;
     const pagination = {
         page: parseInt(req.query.page as string) || 1,
-        limit: parseInt(req.query.limit as string) || 10,
+        limit: parseInt(req.query.limit as string) || 50,
     };
 
     const result = await ParcelServices.getAllParcels(filters, pagination);
@@ -209,6 +233,7 @@ export const ParcelControllers = {
     createParcel,
     getAllParcel,
     updateParcelStatus,
+    updateParcelBlockStatus,
     cancelParcel,
     getSingleParcel,
     getMyParcels,

@@ -27,8 +27,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_model_1 = require("../user/user.model");
-const userToken_1 = require("../../utils/userToken");
 const env_1 = require("../../config/env");
+const userToken_1 = require("../../utils/userToken");
 const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
     const isUserAxist = yield user_model_1.User.findOne({ email }).select("+password");
@@ -39,10 +39,10 @@ const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function
     if (!passwordMatch) {
         throw new Error("Password dose not exit");
     }
-    const userTokens = (0, userToken_1.crateToken)(isUserAxist);
+    const userTokens = (0, userToken_1.createUserTokens)(isUserAxist);
     const _a = isUserAxist.toObject(), { password: pass } = _a, rest = __rest(_a, ["password"]);
     return {
-        accesToken: userTokens.accesToken,
+        accesToken: userTokens.accessToken,
         user: rest
     };
 });

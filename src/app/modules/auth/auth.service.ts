@@ -3,10 +3,10 @@
 import bcryptjs from "bcrypt";
 import { User } from "../user/user.model";
 import { IUser } from '../user/user.interface';
-import { crateToken } from '../../utils/userToken';
 import { envVars } from '../../config/env';
 import { any } from "zod";
 import { JwtPayload } from "jsonwebtoken";
+import { createUserTokens } from "../../utils/userToken";
 
 
 const loginUserService = async (payload: Partial<IUser>) => {
@@ -25,11 +25,11 @@ const loginUserService = async (payload: Partial<IUser>) => {
     throw new Error("Password dose not exit")
   }
 
-  const userTokens = crateToken(isUserAxist)
+  const userTokens = createUserTokens(isUserAxist)
 
   const { password:pass, ...rest } = isUserAxist.toObject()
   return {
-    accesToken: userTokens.accesToken,
+    accesToken: userTokens.accessToken,
     user: rest
 
   }

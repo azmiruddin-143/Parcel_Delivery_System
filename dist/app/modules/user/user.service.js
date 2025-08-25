@@ -73,6 +73,10 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
 const getSingleUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield user_model_1.User.findById(id);
 });
+const getMe = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userId).select("-password").lean();
+    return user;
+});
 const changeUserStatus = (userId, newStatus) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(userId);
     if (!user) {
@@ -91,5 +95,6 @@ exports.UserServices = {
     updateUser,
     getSingleUser,
     changeUserStatus,
+    getMe,
     deleteUser
 };

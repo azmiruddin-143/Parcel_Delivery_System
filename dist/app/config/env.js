@@ -12,7 +12,8 @@ const loadEnvailonment = () => {
         "JWT_ACCESS_SECRET",
         "BCRYPT_SALT_ROUND",
         "EXPRESS_SESSION_SECRET",
-        "JWT_REFRESH_EXPIRES"
+        "JWT_REFRESH_EXPIRES",
+        "FRONTEND_URL"
     ];
     envarry.forEach(key => {
         if (!process.env[key]) {
@@ -25,7 +26,8 @@ const loadEnvailonment = () => {
         JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
         BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND,
         EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET,
-        JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES
+        JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES,
+        FRONTEND_URL: process.env.FRONTEND_URL
     };
 };
 exports.envVars = loadEnvailonment();

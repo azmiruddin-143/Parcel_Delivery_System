@@ -62,12 +62,19 @@ const cancelParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
 }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllParcel = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield parcel_service_1.ParcelServices.getAllParcels();
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page) || 1,
+        limit: parseInt(req.query.limit) || 10,
+    };
+    const result = yield parcel_service_1.ParcelServices.getAllParcels(filters, pagination);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.default.CREATED,
         message: "All Parcel Retrieved Successfully",
         data: result,
+        // data: result.data,
+        // meta: result.meta,
     });
 }));
 const getSingleParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -89,12 +96,19 @@ const getMyParcels = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0
         throw new Error('Unauthorized: User not found in request');
     }
     const senderId = req.user._id;
-    const result = yield parcel_service_1.ParcelServices.getMyParcels(senderId);
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page) || 1,
+        limit: parseInt(req.query.limit) || 10,
+    };
+    const result = yield parcel_service_1.ParcelServices.getMyParcels(senderId.toString(), filters, pagination);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
         message: 'Sender\'s parcels retrieved successfully',
         data: result,
+        // data: result.data,
+        // meta: result.meta,
     });
 }));
 /**
@@ -105,11 +119,51 @@ const getIncomingParcels = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
         throw new Error('Unauthorized: User not found in request');
     }
     const receiverId = req.user._id;
-    const result = yield parcel_service_1.ParcelServices.getIncomingParcels(receiverId);
+    const filters = req.query;
+    const pagination = {
+        page: parseInt(req.query.page) || 1,
+        limit: parseInt(req.query.limit) || 10,
+    };
+    const result = yield parcel_service_1.ParcelServices.getIncomingParcels(receiverId.toString(), filters, pagination);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
         message: 'Receiver\'s incoming parcels retrieved successfully',
+        data: result,
+        // data: result.data,
+        // meta: result.meta,
+    });
+}));
+const confirmDelivery = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        throw new Error('Unauthorized: User not found in request');
+    }
+    const { id } = req.params;
+    const receiverId = req.user._id;
+    const result = yield parcel_service_1.ParcelServices.confirmDelivery(id, receiverId);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Delivery confirmed successfully',
+        data: result,
+    });
+}));
+const getPublicParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { trackingId } = req.params;
+    const result = yield parcel_service_1.ParcelServices.getPublicParcel(trackingId);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Parcel details retrieved successfully',
+        data: result,
+    });
+}));
+const getParcelStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield parcel_service_1.ParcelServices.getParcelStats();
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Parcel statistics retrieved successfully',
         data: result,
     });
 }));
@@ -130,5 +184,8 @@ exports.ParcelControllers = {
     cancelParcel,
     getSingleParcel,
     getMyParcels,
-    getIncomingParcels
+    getIncomingParcels,
+    confirmDelivery,
+    getPublicParcel,
+    getParcelStats
 };

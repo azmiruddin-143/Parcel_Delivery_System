@@ -46,6 +46,7 @@ const parcelSchema = new Schema<IParcel>(
     receiver: {
       name: { type: String, required: true, trim: true },
       phone: { type: String, required: true, trim: true },
+      email: { type: String, required: true,trim: true  },
       address: { type: String, required: true, trim: true },
       userId: { type: Schema.Types.ObjectId, ref: 'User' }, 
     },

@@ -16,13 +16,18 @@ exports.AuthController = void 0;
 const sendResponse_1 = require("../../utils/sendResponse");
 const auth_service_1 = require("./auth.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const setCookie_1 = require("../../utils/setCookie");
+const userToken_1 = require("../../utils/userToken");
 const credentialsLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const loginUser = yield auth_service_1.AuthService.loginUserService(req.body);
-        res.cookie("accessToken", loginUser.accesToken, {
-            httpOnly: true,
-            secure: false
-        });
+        // res.cookie("accessToken", loginUser.accesToken, {
+        //     httpOnly: true,
+        //     secure: false
+        // })
+        const user = loginUser.user;
+        const userTokens = (0, userToken_1.createUserTokens)(user);
+        (0, setCookie_1.setAuthCookie)(res, userTokens);
         (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: 201,

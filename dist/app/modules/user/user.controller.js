@@ -62,6 +62,17 @@ const getSingleUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getMe = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const result = yield user_service_1.UserServices.getMe(decodedToken._id);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        message: "Your profile Retrieved Successfully",
+        data: result
+    });
+}));
 const changeUserStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { status } = req.body;
@@ -89,5 +100,6 @@ exports.UserControllers = {
     updateUser,
     getSingleUser,
     changeUserStatus,
+    getMe,
     deleteUser
 };

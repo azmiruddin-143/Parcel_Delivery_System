@@ -14,11 +14,16 @@ const parcel_validate_1 = require("./parcel.validate");
 // Assuming you have these validation schemas
 //  /api/v1/
 const router = express_1.default.Router();
-router.post("/", (0, validateRequest_1.validateRequest)(parcel_validate_1.createParcelZodSchema), (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.createParcel);
-router.get("/all-parcels", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), parcel_controller_1.ParcelControllers.getAllParcel);
-router.get("/my", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.getMyParcels);
+// ----- নন-প্যারামিটার রুটগুলো আগে রাখুন -----
+router.get('/stats', (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), parcel_controller_1.ParcelControllers.getParcelStats);
+router.get('/all-parcels', (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), parcel_controller_1.ParcelControllers.getAllParcel);
+router.get('/my', (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.getMyParcels);
 router.get("/incoming", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Receiver), parcel_controller_1.ParcelControllers.getIncomingParcels);
+router.post("/", (0, validateRequest_1.validateRequest)(parcel_validate_1.createParcelZodSchema), (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.createParcel);
+// ----- প্যারামিটারসহ রুটগুলো পরে রাখুন -----
+router.get('/track/:trackingId', parcel_controller_1.ParcelControllers.getPublicParcel);
 router.get("/:id", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.IUserRole)), parcel_controller_1.ParcelControllers.getSingleParcel);
-router.patch("/:id/cancel", (0, validateRequest_1.validateRequest)(parcel_validate_1.updateParcelStatusZodSchema), (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.cancelParcel);
-router.patch("/:id/status", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), parcel_controller_1.ParcelControllers.updateParcelStatus);
+router.patch("/:id/confirm-delivery", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Receiver), parcel_controller_1.ParcelControllers.confirmDelivery);
+router.patch("/:id/cancel", (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Sender), parcel_controller_1.ParcelControllers.cancelParcel);
+router.patch("/:id/status", (0, validateRequest_1.validateRequest)(parcel_validate_1.updateParcelStatusZodSchema), (0, checkAuth_1.checkAuth)(user_interface_1.IUserRole.Admin), parcel_controller_1.ParcelControllers.updateParcelStatus);
 exports.parcelRoutes = router;

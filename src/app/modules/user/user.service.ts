@@ -80,6 +80,10 @@ const getSingleUser = async (id: string) => {
     return await User.findById(id);
 };
 
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password").lean();
+    return user; 
+};
 
 const changeUserStatus = async (
   userId: string,
@@ -96,6 +100,52 @@ const changeUserStatus = async (
 };
 
 
+const searchUserByEmail = async (email: string) => {
+    const user = await User.findOne({ email }).select('_id name email role').lean();
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found with this email.");
+    }
+    return user;
+};
+
+
+const getUserStats = async () => {
+    // Calculate the date 30 days ago
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Use aggregation to get all the stats in a single query
+    const stats = await User.aggregate([
+        {
+            $group: {
+                _id: null,
+                totalUsers: { $sum: 1 },
+                blockedUsers: {
+                    $sum: {
+                        $cond: [{ $eq: ['$status', 'Blocked'] }, 1, 0]
+                    }
+                },
+                newUsersLast30Days: {
+                    $sum: {
+                        $cond: [{ $gte: ['$createdAt', thirtyDaysAgo] }, 1, 0]
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                totalUsers: 1,
+                blockedUsers: 1,
+                newUsersLast30Days: 1,
+            }
+        }
+    ]);
+
+    // Return the stats, or default values if no users are found
+    return stats[0] || { totalUsers: 0, blockedUsers: 0, newUsersLast30Days: 0 };
+};
+
 
 
 
@@ -110,5 +160,8 @@ export const UserServices = {
     updateUser,
     getSingleUser,
     changeUserStatus ,
+    getUserStats,
+    getMe,
+    searchUserByEmail,
     deleteUser
 }

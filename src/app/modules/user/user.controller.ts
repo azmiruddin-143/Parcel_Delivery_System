@@ -63,7 +63,17 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload
+    const result = await UserServices.getMe(decodedToken._id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "Your profile Retrieved Successfully",
+        data: result
+    })
+})
 
 const changeUserStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params; 
@@ -78,6 +88,31 @@ const changeUserStatus = catchAsync(async (req: Request, res: Response) => {
     data: updatedUser,
   });
 });
+
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getUserStats = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const stats = await UserServices.getUserStats();
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User stats retrieved successfully",
+        data: stats,
+    });
+});
+
+const searchUserByEmail = catchAsync(async (req: Request, res: Response) => {
+    const { email } = req.query;
+    const user = await UserServices.searchUserByEmail(email as string);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'User found',
+        data: user,
+    });
+});
+
+
 
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -101,6 +136,9 @@ export const UserControllers = {
     updateUser,
     getSingleUser,
     changeUserStatus,
+    getUserStats,
+    searchUserByEmail,
+    getMe,
     deleteUser
 }
 

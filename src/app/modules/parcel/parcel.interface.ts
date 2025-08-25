@@ -34,6 +34,7 @@ export interface IParcel {
   receiver: {
     name: string;
     phone: string;
+    email: string;
     address: string;
     userId?: Types.ObjectId;
   };
@@ -56,6 +57,7 @@ export interface ICreateParcelPayload {
   receiver: {
     name: string;
     phone: string;
+    email: string;
     address: string;
     userId?: string; 
   };

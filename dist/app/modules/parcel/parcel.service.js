@@ -261,9 +261,19 @@ const createParcel = (payload, senderId) => __awaiter(void 0, void 0, void 0, fu
     const newParcel = yield parcel_model_1.Parcel.create(newParcelData);
     return prepareParcelResponse(newParcel);
 });
-const getAllParcels = () => __awaiter(void 0, void 0, void 0, function* () {
-    const parcels = yield parcel_model_1.Parcel.find({}).populate('sender').populate('receiver.userId');
-    return parcels.map(parcel => prepareParcelResponse(parcel));
+// const getAllParcels = async (): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({}).populate('sender').populate('receiver.userId')
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getAllParcels = (filters, pagination) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+    const total = yield parcel_model_1.Parcel.countDocuments(filters);
+    const parcels = yield parcel_model_1.Parcel.find(filters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+    const data = parcels.map(parcel => prepareParcelResponse(parcel));
+    const meta = { page, limit, total };
+    return { data, meta };
 });
 const getSingleParcel = (parcelId, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -332,13 +342,106 @@ const updateParcelStatus = (parcelId, payload, adminId) => __awaiter(void 0, voi
     }, { new: true });
     return prepareParcelResponse(updatedParcel);
 });
-const getMyParcels = (senderId) => __awaiter(void 0, void 0, void 0, function* () {
-    const parcels = yield parcel_model_1.Parcel.find({ sender: new mongoose_1.Types.ObjectId(senderId) }).populate('sender').populate('receiver.userId');
-    return parcels.map(parcel => prepareParcelResponse(parcel));
+// const getMyParcels = async (senderId: string): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({ sender: new Types.ObjectId(senderId) }).populate('sender').populate('receiver.userId')
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getMyParcels = (senderId, filters, pagination) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+    const queryFilters = Object.assign(Object.assign({}, filters), { sender: new mongoose_1.Types.ObjectId(senderId) });
+    const total = yield parcel_model_1.Parcel.countDocuments(queryFilters);
+    const parcels = yield parcel_model_1.Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+    const data = parcels.map(parcel => prepareParcelResponse(parcel));
+    const meta = { page, limit, total };
+    return { data, meta };
 });
-const getIncomingParcels = (receiverId) => __awaiter(void 0, void 0, void 0, function* () {
-    const parcels = yield parcel_model_1.Parcel.find({ 'receiver.userId': new mongoose_1.Types.ObjectId(receiverId) }).populate('sender').populate('receiver.userId');
-    return parcels.map(parcel => prepareParcelResponse(parcel));
+// const getIncomingParcels = async (receiverId: string): Promise<IParcel[]> => {
+//   const parcels = await Parcel.find({ 'receiver.userId': new Types.ObjectId(receiverId) }).populate('sender').populate('receiver.userId');
+//   return parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+// };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getIncomingParcels = (receiverId, filters, pagination) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+    const queryFilters = Object.assign(Object.assign({}, filters), { 'receiver.userId': new mongoose_1.Types.ObjectId(receiverId) });
+    const total = yield parcel_model_1.Parcel.countDocuments(queryFilters);
+    const parcels = yield parcel_model_1.Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+    const data = parcels.map(parcel => prepareParcelResponse(parcel));
+    const meta = { page, limit, total };
+    return { data, meta };
+});
+const confirmDelivery = (parcelId, receiverId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const parcel = yield parcel_model_1.Parcel.findById(parcelId);
+    if (!parcel) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, 'Parcel not found');
+    }
+    // Authorization: Check if the logged-in user is the actual receiver
+    if (((_a = parcel.receiver.userId) === null || _a === void 0 ? void 0 : _a.toString()) !== receiverId.toString()) {
+        throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, 'You are not authorized to confirm this delivery');
+    }
+    // Business Rule: Check if the parcel is in the correct status for delivery confirmation
+    if (parcel.currentStatus !== parcel_interface_1.IParcelStatus.InTransit) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, 'Parcel status must be "In Transit" to be confirmed as delivered.');
+    }
+    // Update parcel status
+    const updatedParcel = yield parcel_model_1.Parcel.findByIdAndUpdate(parcelId, {
+        isDelivered: true,
+        currentStatus: parcel_interface_1.IParcelStatus.Delivered,
+        $push: {
+            statusLogs: {
+                status: parcel_interface_1.IParcelStatus.Delivered,
+                timestamp: new Date(),
+                updatedBy: new mongoose_1.Types.ObjectId(receiverId.toString()),
+                note: 'Delivery confirmed by receiver.',
+            },
+        },
+    }, { new: true });
+    return prepareParcelResponse(updatedParcel);
+});
+const getPublicParcel = (trackingId) => __awaiter(void 0, void 0, void 0, function* () {
+    const parcel = yield parcel_model_1.Parcel.findOne({ trackingId }).lean();
+    if (!parcel) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, 'Parcel not found');
+    }
+    // You might want to remove sensitive data like sender/receiver IDs here
+    // But since you're using lean(), it's a good practice to ensure it's not exposed.
+    // For now, prepareParcelResponse should be sufficient.
+    return parcel;
+});
+const getParcelStats = () => __awaiter(void 0, void 0, void 0, function* () {
+    const stats = yield parcel_model_1.Parcel.aggregate([
+        {
+            $group: {
+                _id: null,
+                totalParcels: { $sum: 1 },
+                deliveredCount: {
+                    $sum: {
+                        $cond: [{ $eq: ['$currentStatus', parcel_interface_1.IParcelStatus.Delivered] }, 1, 0]
+                    }
+                },
+                inTransitCount: {
+                    $sum: {
+                        $cond: [{ $eq: ['$currentStatus', parcel_interface_1.IParcelStatus.InTransit] }, 1, 0]
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                totalParcels: 1,
+                deliveredCount: 1,
+                inTransitCount: 1
+            }
+        }
+    ]);
+    if (stats.length === 0) {
+        return { totalParcels: 0, deliveredCount: 0, inTransitCount: 0 };
+    }
+    return stats[0];
 });
 const deleteParcel = (parcelId) => __awaiter(void 0, void 0, void 0, function* () {
     const deletedParcel = yield parcel_model_1.Parcel.findByIdAndDelete(parcelId);
@@ -356,4 +459,7 @@ exports.ParcelServices = {
     cancelParcel,
     updateParcelStatus,
     deleteParcel,
+    confirmDelivery,
+    getPublicParcel,
+    getParcelStats
 };

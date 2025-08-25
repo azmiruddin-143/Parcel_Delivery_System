@@ -3,14 +3,24 @@ import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../../utils/sendResponse"
 import { AuthService } from "./auth.service"
 import httpStatus from "http-status-codes";
+import { setAuthCookie } from "../../utils/setCookie";
+import { createUserTokens } from "../../utils/userToken";
 const credentialsLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const loginUser = await AuthService.loginUserService(req.body)
 
-        res.cookie("accessToken", loginUser.accesToken, {
-            httpOnly: true,
-            secure: false
-        })
+        // res.cookie("accessToken", loginUser.accesToken, {
+        //     httpOnly: true,
+        //     secure: false
+
+        // })
+  
+        const user = loginUser.user;
+
+        const userTokens = createUserTokens(user); 
+    
+
+        setAuthCookie(res, userTokens);
 
 
         sendResponse(res, {
@@ -26,17 +36,20 @@ const credentialsLogin = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
+
+
+
 const userLogout = async (req: Request, res: Response, next: NextFunction) => {
     try {
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: false, 
+            secure: false,
             sameSite: "lax"
         });
 
         sendResponse(res, {
             success: true,
-            statusCode: httpStatus.OK, 
+            statusCode: httpStatus.OK,
             message: "User Logged out Successfully",
             data: null
         });
@@ -50,15 +63,15 @@ const userLogout = async (req: Request, res: Response, next: NextFunction) => {
 const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { oldPassword, newPassword } = req.body;
-        
-        const userId = req.user?._id; 
+
+        const userId = req.user?._id;
 
         if (!userId) {
             throw new Error("Unauthorized: User not authenticated");
         }
 
         const userresetPassword = await AuthService.passwordResetService(
-            userId, 
+            userId,
             oldPassword,
             newPassword
         );
@@ -79,5 +92,5 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
 
 
 
-export const AuthController = { credentialsLogin,  userLogout, resetPassword}
+export const AuthController = { credentialsLogin, userLogout, resetPassword }
 
