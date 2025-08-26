@@ -4,6 +4,7 @@ import httpStatus from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { ParcelServices } from "./parcel.service";
+import { JwtPayload } from "jsonwebtoken";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -103,6 +104,8 @@ const getAllParcel = catchAsync(async (req: Request, res: Response, next: NextFu
         // meta: result.meta,
     })
 })
+
+
 
 
 const getSingleParcel = catchAsync(async (req: Request, res: Response) => {
@@ -215,16 +218,32 @@ const getParcelStats = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-// const deleteParcel = catchAsync(async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const result = await ParcelServices.deleteParcel(id);
-//     sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message: 'Parcel deleted successfully',
-//         data: result,
-//     });
-// });
+const getDeliveredParcels = catchAsync(async (req: Request, res: Response) => {
+    const receiverId = (req.user as JwtPayload)._id; 
+
+    const pagination = { page: 1, limit: 50 }; 
+    const result = await ParcelServices.getDeliveredParcels(receiverId, pagination);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Delivered parcels retrieved successfully',
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+
+const deleteParcel = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await ParcelServices.deleteParcel(id);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Parcel deleted successfully',
+        data: result,
+    });
+});
 
 
 
@@ -239,8 +258,10 @@ export const ParcelControllers = {
     getMyParcels,
     getIncomingParcels,
     confirmDelivery,
+    getDeliveredParcels,
     getPublicParcel,
-    getParcelStats
+    getParcelStats,
+    deleteParcel
 
 }
 

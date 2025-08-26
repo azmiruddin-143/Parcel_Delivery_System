@@ -319,83 +319,95 @@ const generateTrackingId = (): string => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
 const createParcel = async (
-    payload: ICreateParcelPayload,
-    senderId: string
+  payload: ICreateParcelPayload,
+  senderId: string
 ): Promise<IParcel> => {
 
-    const receiverUser = await User.findOne({ email: payload.receiver.email }).lean();
+  const receiverUser = await User.findOne({ email: payload.receiver.email }).lean();
 
-    if (!receiverUser) {
-        throw new AppError(httpStatus.NOT_FOUND, "Receiver not found with this email.");
-    }
-    if (receiverUser.role !== IUserRole.Receiver) {
-        throw new AppError(httpStatus.BAD_REQUEST, `Parcel can only be sent to a user with the role of '${IUserRole.Receiver}'.`);
-    }
+  if (!receiverUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "Receiver not found with this email.");
+  }
+  if (receiverUser.role !== IUserRole.Receiver) {
+    throw new AppError(httpStatus.BAD_REQUEST, `Parcel can only be sent to a user with the role of '${IUserRole.Receiver}'.`);
+  }
 
-    if (receiverUser._id.toString() === senderId.toString()) {
-        throw new AppError(httpStatus.BAD_REQUEST, "You cannot send a parcel to yourself.");
-    }
+  if (receiverUser._id.toString() === senderId.toString()) {
+    throw new AppError(httpStatus.BAD_REQUEST, "You cannot send a parcel to yourself.");
+  }
 
-    const newParcelData: IParcel = {
-        parcelType: payload.parcelType,
-        weight: payload.weight,
-        deliveryAddress: payload.deliveryAddress,
-        trackingId: generateTrackingId(),
-        sender: new Types.ObjectId(senderId),
-        receiver: {
-            name: payload.receiver.name,
-            phone: payload.receiver.phone,
-            email: payload.receiver.email,
-            address: payload.receiver.address,
-            userId: receiverUser._id,
-        },
-        currentStatus: IParcelStatus.Requested,
-        isCancelled: false,
-        isDelivered: false,
-        statusLogs: [
-            {
-                status: IParcelStatus.Requested,
-                timestamp: new Date(),
-                updatedBy: new Types.ObjectId(senderId),
-                note: 'Parcel delivery request created by sender',
-            },
-        ],
-    };
+  const newParcelData: IParcel = {
+    parcelType: payload.parcelType,
+    weight: payload.weight,
+    deliveryAddress: payload.deliveryAddress,
+    trackingId: generateTrackingId(),
+    sender: new Types.ObjectId(senderId),
+    receiver: {
+      name: payload.receiver.name,
+      phone: payload.receiver.phone,
+      email: payload.receiver.email,
+      address: payload.receiver.address,
+      userId: receiverUser._id,
+    },
+    currentStatus: IParcelStatus.Requested,
+    isCancelled: false,
+    isDelivered: false,
+    statusLogs: [
+      {
+        status: IParcelStatus.Requested,
+        timestamp: new Date(),
+        updatedBy: new Types.ObjectId(senderId),
+        note: 'Parcel delivery request created by sender',
+      },
+    ],
+  };
 
-    const newParcel = await Parcel.create(newParcelData);
-    return prepareParcelResponse(newParcel);
+  const newParcel = await Parcel.create(newParcelData);
+  return prepareParcelResponse(newParcel);
 };
 
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAllParcels = async (filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
-    const { page = 1, limit = 50 } = pagination;
-    const skip = (page - 1) * limit;
+  const { page = 1, limit = 50 } = pagination;
+  const skip = (page - 1) * limit;
 
-    const total = await Parcel.countDocuments(filters);
-    const parcels = await Parcel.find(filters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+  const total = await Parcel.countDocuments(filters);
+  const parcels = await Parcel.find(filters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
 
-    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
-    const meta = { page, limit, total };
+  const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+  const meta = { page, limit, total };
 
-    return { data, meta };
+  return { data, meta };
 };
 
 
 
 const getSingleParcel = async (parcelId: string, user: JwtPayload): Promise<IParcel | null> => {
-  const parcel = await Parcel.findById(parcelId);
+  const parcel = await Parcel.findById(parcelId).populate('sender');
+
+
+  console.log("ppp", parcel);
   if (!parcel) {
     throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
   }
 
-  if (user.role === IUserRole.Admin || parcel.sender.toString() === user.userId || parcel.receiver.userId?.toString() === user.userId) {
+  // if (user.role === IUserRole.Admin || parcel.sender.toString() === user.userId || parcel.receiver.userId?.toString() === user.userId) {
+  //   return prepareParcelResponse(parcel as IParcel);
+  // }
+  if (user.role === IUserRole.Admin || user.role === IUserRole.Sender || user.role === IUserRole.Receiver) {
     return prepareParcelResponse(parcel as IParcel);
   }
 
   throw new AppError(httpStatus.FORBIDDEN, 'You are not authorized to view this parcel');
 };
+
+
+// src/modules/parcel/parcel.service.ts
+
+
+
 
 const cancelParcel = async (parcelId: string, senderId: string): Promise<IParcel> => {
   const parcel = await Parcel.findById(parcelId);
@@ -492,17 +504,17 @@ const updateParcelStatus = async (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getMyParcels = async (senderId: string, filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
-    const { page = 1, limit = 10 } = pagination;
-    const skip = (page - 1) * limit;
+  const { page = 1, limit = 10 } = pagination;
+  const skip = (page - 1) * limit;
 
-    const queryFilters = { ...filters, sender: new Types.ObjectId(senderId) };
-    const total = await Parcel.countDocuments(queryFilters);
-    const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+  const queryFilters = { ...filters, sender: new Types.ObjectId(senderId) };
+  const total = await Parcel.countDocuments(queryFilters);
+  const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
 
-    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
-    const meta = { page, limit, total };
+  const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+  const meta = { page, limit, total };
 
-    return { data, meta };
+  return { data, meta };
 };
 // const getIncomingParcels = async (receiverId: string): Promise<IParcel[]> => {
 //   const parcels = await Parcel.find({ 'receiver.userId': new Types.ObjectId(receiverId) }).populate('sender').populate('receiver.userId');
@@ -515,17 +527,17 @@ const getMyParcels = async (senderId: string, filters: any, pagination: any): Pr
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getIncomingParcels = async (receiverId: string, filters: any, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
-    const { page = 1, limit = 10 } = pagination;
-    const skip = (page - 1) * limit;
+  const { page = 1, limit = 10 } = pagination;
+  const skip = (page - 1) * limit;
 
-    const queryFilters = { ...filters, 'receiver.userId': new Types.ObjectId(receiverId) };
-    const total = await Parcel.countDocuments(queryFilters);
-    const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
+  const queryFilters = { ...filters, 'receiver.userId': new Types.ObjectId(receiverId) };
+  const total = await Parcel.countDocuments(queryFilters);
+  const parcels = await Parcel.find(queryFilters).skip(skip).limit(limit).populate('sender').populate('receiver.userId');
 
-    const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
-    const meta = { page, limit, total };
+  const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+  const meta = { page, limit, total };
 
-    return { data, meta };
+  return { data, meta };
 };
 
 const confirmDelivery = async (parcelId: string, receiverId: string): Promise<IParcel> => {
@@ -720,15 +732,58 @@ const getParcelStats = async (): Promise<{
 };
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getDeliveredParcels = async (receiverId: string, pagination: any): Promise<{ data: IParcel[], meta: { page: number, limit: number, total: number } }> => {
+  const { page = 1, limit = 50 } = pagination;
+  const skip = (page - 1) * limit;
 
-const deleteParcel = async (parcelId: string): Promise<IParcel | null> => {
-  const deletedParcel = await Parcel.findByIdAndDelete(parcelId);
-  if (!deletedParcel) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
-  }
-  return prepareParcelResponse(deletedParcel as IParcel);
+  const queryFilters = { currentStatus: IParcelStatus.Delivered, 'receiver.userId': new Types.ObjectId(receiverId) };
+
+  const total = await Parcel.countDocuments(queryFilters);
+  const parcels = await Parcel.find(queryFilters)
+    .skip(skip)
+    .limit(limit)
+    .populate('sender')
+    .populate('receiver.userId');
+
+  const data = parcels.map(parcel => prepareParcelResponse(parcel as IParcel));
+  const meta = { page, limit, total };
+
+  return { data, meta };
 };
 
+// const deleteParcel = async (parcelId: string): Promise<IParcel | null> => {
+//   const deletedParcel = await Parcel.findByIdAndDelete(parcelId);
+//   if (!deletedParcel) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
+//   }
+//   return prepareParcelResponse(deletedParcel as IParcel);
+// };
+
+const deleteParcel = async (parcelId: string): Promise<IParcel | null> => {
+  const parcelToDelete = await Parcel.findById(parcelId);
+  if (!parcelToDelete) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Parcel not found');
+  }
+
+  // শর্ত চেক করা হচ্ছে: শুধুমাত্র 'Requested' অথবা 'Cancelled' স্ট্যাটাসের পার্সেল ডিলিট করা যাবে
+  if (parcelToDelete.currentStatus !== 'Requested' && parcelToDelete.currentStatus !== 'Cancelled') {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You can only delete parcels with "Requested" or "Cancelled" status.'
+    );
+  }
+
+
+  const deletedParcel = await Parcel.findByIdAndDelete(parcelId);
+
+
+  if (!deletedParcel) {
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to delete the parcel');
+  }
+
+  return prepareParcelResponse(deletedParcel as IParcel);
+};
 
 export const ParcelServices = {
   createParcel,
@@ -742,5 +797,6 @@ export const ParcelServices = {
   deleteParcel,
   confirmDelivery,
   getPublicParcel,
+  getDeliveredParcels,
   getParcelStats
 };

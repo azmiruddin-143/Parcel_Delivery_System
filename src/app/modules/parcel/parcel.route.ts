@@ -14,10 +14,15 @@ const router = express.Router();
 
 // ----- নন-প্যারামিটার রুটগুলো আগে রাখুন -----
 router.get('/stats', checkAuth(IUserRole.Admin), ParcelControllers.getParcelStats);
+router.get("/delivered", checkAuth(IUserRole.Admin, IUserRole.Receiver), ParcelControllers.getDeliveredParcels);
 router.get('/allparcels', checkAuth(IUserRole.Admin), ParcelControllers.getAllParcel);
 router.get('/my', checkAuth(IUserRole.Sender), ParcelControllers.getMyParcels);
 router.get("/incoming", checkAuth(IUserRole.Receiver), ParcelControllers.getIncomingParcels);
 router.post("/", validateRequest(createParcelZodSchema), checkAuth(IUserRole.Sender), ParcelControllers.createParcel);
+router.delete(
+    "/:id",
+    checkAuth(IUserRole.Admin, IUserRole.Sender),
+    ParcelControllers.deleteParcel);
 
 
 // ----- প্যারামিটারসহ রুটগুলো পরে রাখুন -----
