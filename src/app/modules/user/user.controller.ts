@@ -18,18 +18,14 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         data: user,
     })
 })
+
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
-
-
     const verifiedToken = req.user as JwtPayload;;
-
     const payload = req.body;
     const user = await UserServices.updateUser(userId, payload, verifiedToken)
-
-  
-
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,

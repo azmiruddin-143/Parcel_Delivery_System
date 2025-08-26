@@ -14,7 +14,6 @@ export const checkAuth = (...authRoles: IUserRole[]) => async (req: Request, res
         const accessToken = req.headers.authorization || req.cookies.accessToken;
         //   const accessToken = req.headers.authorization || req.cookies.accessToken;
 
-        console.log(accessToken);
 
         if (!accessToken) {
             throw new AppError(httpStatus.FORBIDDEN, "No Token Received");

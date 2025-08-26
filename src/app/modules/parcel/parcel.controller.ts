@@ -25,6 +25,22 @@ const createParcel = catchAsync(async (req: Request, res: Response, next: NextFu
 })
 
 
+const updateParcel = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    // const user = req.user as JwtPayload;
+    const { body } = req;
+
+    const result = await ParcelServices.updateParcel(id, body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Parcel updated successfully',
+        data: result,
+    });
+});
+
+
 const updateParcelStatus = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     if (!req.user) {
@@ -44,27 +60,27 @@ const updateParcelStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateParcelBlockStatus = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const adminId = req.user?.userId;
-  let isBlocked = false;
-  let note = '';
+    const { id } = req.params;
+    const adminId = req.user?.userId;
+    let isBlocked = false;
+    let note = '';
 
-  // Check the URL path to determine if it's a block or unblock request
-  if (req.originalUrl.includes('/block')) {
-    isBlocked = true;
-    note = 'Parcel was blocked by admin.';
-  } else if (req.originalUrl.includes('/unblock')) {
-    isBlocked = false;
-    note = 'Parcel was unblocked by admin.';
-  }
+    // Check the URL path to determine if it's a block or unblock request
+    if (req.originalUrl.includes('/block')) {
+        isBlocked = true;
+        note = 'Parcel was blocked by admin.';
+    } else if (req.originalUrl.includes('/unblock')) {
+        isBlocked = false;
+        note = 'Parcel was unblocked by admin.';
+    }
 
     const result = await ParcelServices.updateParcelBlockStatus(id, isBlocked, adminId, note);
     res.status(httpStatus.OK).json({
-      success: true,
-      message: `Parcel ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
-      data: result,
+        success: true,
+        message: `Parcel ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+        data: result,
     });
-  
+
 };
 
 const cancelParcel = catchAsync(async (req: Request, res: Response) => {
@@ -219,9 +235,9 @@ const getParcelStats = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getDeliveredParcels = catchAsync(async (req: Request, res: Response) => {
-    const receiverId = (req.user as JwtPayload)._id; 
+    const receiverId = (req.user as JwtPayload)._id;
 
-    const pagination = { page: 1, limit: 50 }; 
+    const pagination = { page: 1, limit: 50 };
     const result = await ParcelServices.getDeliveredParcels(receiverId, pagination);
 
     sendResponse(res, {
@@ -250,6 +266,7 @@ const deleteParcel = catchAsync(async (req: Request, res: Response) => {
 
 export const ParcelControllers = {
     createParcel,
+    updateParcel,
     getAllParcel,
     updateParcelStatus,
     updateParcelBlockStatus,

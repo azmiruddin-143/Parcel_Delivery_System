@@ -4,7 +4,7 @@ import { ParcelControllers } from './parcel.controller';
 import { checkAuth } from '../../middlewares/checkAuth';
 import { IUserRole } from '../user/user.interface';
 import { validateRequest } from '../../middlewares/validateRequest';
-import { createParcelZodSchema,  updateParcelStatusZodSchema } from './parcel.validate';
+import { createParcelZodSchema,  updateParcelStatusZodSchema, updateParcelValidationSchema } from './parcel.validate';
  // Assuming you have these validation schemas
 
 //  /api/v1/
@@ -23,6 +23,13 @@ router.delete(
     "/:id",
     checkAuth(IUserRole.Admin, IUserRole.Sender),
     ParcelControllers.deleteParcel);
+
+    router.patch(
+    "/:id",
+    checkAuth(IUserRole.Admin, IUserRole.Sender), 
+    validateRequest(updateParcelValidationSchema), 
+    ParcelControllers.updateParcel
+);
 
 
 // ----- প্যারামিটারসহ রুটগুলো পরে রাখুন -----

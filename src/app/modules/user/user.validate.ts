@@ -13,7 +13,7 @@ export const createZodSchema = z.object({
         .min(6, { message: "Password must be at least 6 characters long" })
         .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
         .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-        .regex(/[0-9]/, { message: "Password must contain at least one digit" })
+        .regex(/[0-9]/, { message: "Password must contain at one Number" })
         .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
         .optional(),
     phone: z.string()
@@ -33,6 +33,8 @@ export const updateZodSchema = z.object({
         .min(3, { message: "Name must be at least 3 characters long" })
         .max(50, { message: "Name cannot exceed 50 characters" })
         .optional(),
+         email: z.string()
+        .email({ message: "Invalid email address" }).optional(),
     password: z.string()
         .min(6, { message: "Password must be at least 6 characters long" })
         .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
