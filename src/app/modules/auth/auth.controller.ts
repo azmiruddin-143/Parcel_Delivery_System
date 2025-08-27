@@ -14,11 +14,11 @@ const credentialsLogin = async (req: Request, res: Response, next: NextFunction)
         //     secure: false
 
         // })
-  
+
         const user = loginUser.user;
 
-        const userTokens = createUserTokens(user); 
-    
+        const userTokens = createUserTokens(user);
+
 
         setAuthCookie(res, userTokens);
 
@@ -43,8 +43,10 @@ const userLogout = async (req: Request, res: Response, next: NextFunction) => {
     try {
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax"
+            secure: true, // HTTPS-এর জন্য true
+            sameSite: "none" as const, // ক্রস-ডোমেইন রিকোয়েস্টের জন্য "none"
+            // secure: false,
+            // sameSite: "lax"
         });
 
         sendResponse(res, {

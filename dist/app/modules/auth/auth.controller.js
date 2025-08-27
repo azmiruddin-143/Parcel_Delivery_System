@@ -43,8 +43,10 @@ const userLogout = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     try {
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax"
+            secure: true, // HTTPS-এর জন্য true
+            sameSite: "none", // ক্রস-ডোমেইন রিকোয়েস্টের জন্য "none"
+            // secure: false,
+            // sameSite: "lax"
         });
         (0, sendResponse_1.sendResponse)(res, {
             success: true,
