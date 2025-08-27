@@ -22,7 +22,6 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
     try {
         const accessToken = req.headers.authorization || req.cookies.accessToken;
         //   const accessToken = req.headers.authorization || req.cookies.accessToken;
-        console.log(accessToken);
         if (!accessToken) {
             throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "No Token Received");
         }

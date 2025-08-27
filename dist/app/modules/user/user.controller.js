@@ -84,6 +84,26 @@ const changeUserStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(vo
         data: updatedUser,
     });
 }));
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getUserStats = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const stats = yield user_service_1.UserServices.getUserStats();
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "User stats retrieved successfully",
+        data: stats,
+    });
+}));
+const searchUserByEmail = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.query;
+    const user = yield user_service_1.UserServices.searchUserByEmail(email);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'User found',
+        data: user,
+    });
+}));
 const deleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield user_service_1.UserServices.deleteUser(id);
@@ -100,6 +120,8 @@ exports.UserControllers = {
     updateUser,
     getSingleUser,
     changeUserStatus,
+    getUserStats,
+    searchUserByEmail,
     getMe,
     deleteUser
 };

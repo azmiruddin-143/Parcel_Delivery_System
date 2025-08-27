@@ -17,7 +17,7 @@ exports.createZodSchema = zod_1.default.object({
         .min(6, { message: "Password must be at least 6 characters long" })
         .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
         .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
-        .regex(/[0-9]/, { message: "Password must contain at least one digit" })
+        .regex(/[0-9]/, { message: "Password must contain at one Number" })
         .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character (e.g., @$!%*#?&)" })
         .optional(),
     phone: zod_1.default.string()
@@ -35,6 +35,8 @@ exports.updateZodSchema = zod_1.default.object({
         .min(3, { message: "Name must be at least 3 characters long" })
         .max(50, { message: "Name cannot exceed 50 characters" })
         .optional(),
+    email: zod_1.default.string()
+        .email({ message: "Invalid email address" }).optional(),
     password: zod_1.default.string()
         .min(6, { message: "Password must be at least 6 characters long" })
         .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })

@@ -42,6 +42,7 @@ const parcelSchema = new mongoose_1.Schema({
     receiver: {
         name: { type: String, required: true, trim: true },
         phone: { type: String, required: true, trim: true },
+        email: { type: String, required: true, trim: true },
         address: { type: String, required: true, trim: true },
         userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User' },
     },

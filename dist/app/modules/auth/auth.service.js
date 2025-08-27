@@ -29,11 +29,16 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_model_1 = require("../user/user.model");
 const env_1 = require("../../config/env");
 const userToken_1 = require("../../utils/userToken");
+const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const loginUserService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
     const isUserAxist = yield user_model_1.User.findOne({ email }).select("+password");
     if (!isUserAxist) {
         throw new Error("Email dose not exit");
+    }
+    if (isUserAxist.status === 'Blocked') {
+        throw new AppError_1.default(http_status_codes_1.default.FORBIDDEN, "Your account has been blocked. Please contact an administrator.");
     }
     const passwordMatch = yield bcrypt_1.default.compare(password, isUserAxist.password);
     if (!passwordMatch) {
@@ -53,7 +58,7 @@ const passwordResetService = (userId, oldPassword, newPassword) => __awaiter(voi
     }
     const OldpasswordMatch = yield bcrypt_1.default.compare(oldPassword, user.password);
     if (!OldpasswordMatch) {
-        throw new Error("Password dose not exit");
+        throw new Error(" Old Password dose not exit");
     }
     user.password = yield bcrypt_1.default.hash(newPassword, Number(env_1.envVars.BCRYPT_SALT_ROUND));
     yield user.save();

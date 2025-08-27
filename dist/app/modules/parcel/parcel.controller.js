@@ -31,6 +31,18 @@ const createParcel = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
         data: parcel,
     });
 }));
+const updateParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    // const user = req.user as JwtPayload;
+    const { body } = req;
+    const result = yield parcel_service_1.ParcelServices.updateParcel(id, body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Parcel updated successfully',
+        data: result,
+    });
+}));
 const updateParcelStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!req.user) {
@@ -46,6 +58,28 @@ const updateParcelStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
         data: result,
     });
 }));
+const updateParcelBlockStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { id } = req.params;
+    const adminId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    let isBlocked = false;
+    let note = '';
+    // Check the URL path to determine if it's a block or unblock request
+    if (req.originalUrl.includes('/block')) {
+        isBlocked = true;
+        note = 'Parcel was blocked by admin.';
+    }
+    else if (req.originalUrl.includes('/unblock')) {
+        isBlocked = false;
+        note = 'Parcel was unblocked by admin.';
+    }
+    const result = yield parcel_service_1.ParcelServices.updateParcelBlockStatus(id, isBlocked, adminId, note);
+    res.status(http_status_codes_1.default.OK).json({
+        success: true,
+        message: `Parcel ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+        data: result,
+    });
+});
 const cancelParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     if (!req.user) {
@@ -65,7 +99,7 @@ const getAllParcel = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
     const filters = req.query;
     const pagination = {
         page: parseInt(req.query.page) || 1,
-        limit: parseInt(req.query.limit) || 10,
+        limit: parseInt(req.query.limit) || 50,
     };
     const result = yield parcel_service_1.ParcelServices.getAllParcels(filters, pagination);
     (0, sendResponse_1.sendResponse)(res, {
@@ -167,25 +201,41 @@ const getParcelStats = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void
         data: result,
     });
 }));
-// const deleteParcel = catchAsync(async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const result = await ParcelServices.deleteParcel(id);
-//     sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message: 'Parcel deleted successfully',
-//         data: result,
-//     });
-// });
+const getDeliveredParcels = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiverId = req.user._id;
+    const pagination = { page: 1, limit: 50 };
+    const result = yield parcel_service_1.ParcelServices.getDeliveredParcels(receiverId, pagination);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: 'Delivered parcels retrieved successfully',
+        data: result.data,
+        meta: result.meta,
+    });
+}));
+const deleteParcel = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield parcel_service_1.ParcelServices.deleteParcel(id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Parcel deleted successfully',
+        data: result,
+    });
+}));
 exports.ParcelControllers = {
     createParcel,
+    updateParcel,
     getAllParcel,
     updateParcelStatus,
+    updateParcelBlockStatus,
     cancelParcel,
     getSingleParcel,
     getMyParcels,
     getIncomingParcels,
     confirmDelivery,
+    getDeliveredParcels,
     getPublicParcel,
-    getParcelStats
+    getParcelStats,
+    deleteParcel
 };

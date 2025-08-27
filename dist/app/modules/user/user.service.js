@@ -86,6 +86,47 @@ const changeUserStatus = (userId, newStatus) => __awaiter(void 0, void 0, void 0
     yield user.save();
     return user;
 });
+const searchUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email }).select('_id name email role').lean();
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found with this email.");
+    }
+    return user;
+});
+const getUserStats = () => __awaiter(void 0, void 0, void 0, function* () {
+    // Calculate the date 30 days ago
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Use aggregation to get all the stats in a single query
+    const stats = yield user_model_1.User.aggregate([
+        {
+            $group: {
+                _id: null,
+                totalUsers: { $sum: 1 },
+                blockedUsers: {
+                    $sum: {
+                        $cond: [{ $eq: ['$status', 'Blocked'] }, 1, 0]
+                    }
+                },
+                newUsersLast30Days: {
+                    $sum: {
+                        $cond: [{ $gte: ['$createdAt', thirtyDaysAgo] }, 1, 0]
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                totalUsers: 1,
+                blockedUsers: 1,
+                newUsersLast30Days: 1,
+            }
+        }
+    ]);
+    // Return the stats, or default values if no users are found
+    return stats[0] || { totalUsers: 0, blockedUsers: 0, newUsersLast30Days: 0 };
+});
 const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield user_model_1.User.findByIdAndDelete(id);
 });
@@ -95,6 +136,8 @@ exports.UserServices = {
     updateUser,
     getSingleUser,
     changeUserStatus,
+    getUserStats,
     getMe,
+    searchUserByEmail,
     deleteUser
 };
